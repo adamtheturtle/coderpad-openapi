@@ -31,6 +31,12 @@ Validation
    uvx --python 3.12 --from openapi-spec-validator==0.9.0 openapi-spec-validator openapi.json
 
 The validation workflow runs this check on pushes and pull requests.
+It also checks documentation with Vale:
+
+.. code-block:: shell
+
+   uvx --with docutils --from vale==3.22.0.0 vale sync
+   uvx --with docutils --from vale==3.22.0.0 vale .
 
 Provenance
 ----------
