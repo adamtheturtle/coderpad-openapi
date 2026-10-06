@@ -38,6 +38,22 @@ Organization question lists support language and pad-type filtering.
 ``GET /api/user`` describes the API key owner's name and pad-creation capability.
 
 
+Response contracts
+------------------
+
+Individual pad responses can include analytics.
+The optional fields are ``interview_highlights``, ``interview_outline``,
+``transcript``, ``transcript_source_unavailable``, and ``review_reports``.
+These fields are optional and depend on permissions and account features.
+List responses do not require analytics.
+
+Question starter files describe project overlays separately from uploaded
+attachments.
+Variant summaries identify a language or project template without requiring
+variant code.
+Instruction steps can include a name.
+
+
 Validation
 ----------
 
