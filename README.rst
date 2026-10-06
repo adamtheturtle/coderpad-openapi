@@ -1,10 +1,10 @@
 coderpad-openapi
 ================
 
-Shared, community-maintained OpenAPI specification for CoderPad Interview.
+Shared, community-maintained OpenAPI specifications for CoderPad Interview and Screen.
 This is not an official CoderPad publication.
 
-``openapi.json`` is the canonical specification for tooling such as
+``openapi.json`` is the Interview specification for tooling such as
 ``coderpad-py`` and ``coderpad-cli``.
 API contract changes belong here rather than in independently maintained
 consumer fixtures.
@@ -54,12 +54,32 @@ variant code.
 Instruction steps can include a name.
 
 
+Screen contract
+---------------
+
+``screen.openapi.json`` describes Screen v1.1 independently of Interview.
+It uses ``API-Key`` authentication with US and EU origins.
+Campaign and test IDs are integers; question bank and detailed test-question
+IDs are UUIDs.
+The lightweight test list retains its integer question IDs.
+
+The contract covers campaign creation and manual invitations, question-bank
+operations, detailed evaluations, AI Assist conversations, and account details.
+Temporary uploads use raw gzip bytes with a 52428800-byte limit.
+Report exports return PDF bytes.
+Candidate projects return tar.gz bytes.
+
+Pin both documents to an immutable release tag or full commit SHA.
+The Interview filename and base URL conventions remain stable.
+
+
 Validation
 ----------
 
 .. code-block:: shell
 
    uvx --python 3.12 --from openapi-spec-validator==0.9.0 openapi-spec-validator openapi.json
+   uvx --python 3.12 --from openapi-spec-validator==0.9.0 openapi-spec-validator screen.openapi.json
 
 The validation workflow runs this check on pushes and pull requests.
 It also checks documentation with Vale:
