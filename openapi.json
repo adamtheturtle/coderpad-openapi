@@ -421,117 +421,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "pads": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "state": {
-                            "type": "string"
-                          },
-                          "owner_email": {
-                            "type": "string",
-                            "format": "email"
-                          },
-                          "language": {
-                            "type": "string"
-                          },
-                          "private": {
-                            "type": "boolean"
-                          },
-                          "execution_enabled": {
-                            "type": "boolean"
-                          },
-                          "contents": {
-                            "type": "null"
-                          },
-                          "participants": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "events": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "notes": {
-                            "type": "null"
-                          },
-                          "created_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "updated_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "ended_at": {
-                            "type": "null"
-                          },
-                          "url": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "playback": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "history": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "drawing": {
-                            "type": "null"
-                          },
-                          "type": {
-                            "type": "string"
-                          },
-                          "question_ids": {
-                            "type": "array"
-                          },
-                          "pad_environment_ids": {
-                            "type": "array",
-                            "items": {
-                              "type": "integer"
-                            }
-                          },
-                          "active_environment_id": {
-                            "type": "integer"
-                          },
-                          "team": {
-                            "type": "object",
-                            "properties": {
-                              "id": {
-                                "type": "string"
-                              },
-                              "name": {
-                                "type": "string"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "next_page": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "total": {
-                      "type": "integer"
-                    }
-                  }
+                  "$ref": "#/components/schemas/PadsPage"
                 },
                 "example": {
                   "status": "OK",
@@ -895,99 +785,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "id": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "state": {
-                      "type": "string"
-                    },
-                    "owner_email": {
-                      "type": "string",
-                      "format": "email"
-                    },
-                    "language": {
-                      "type": "string"
-                    },
-                    "private": {
-                      "type": "boolean"
-                    },
-                    "execution_enabled": {
-                      "type": "boolean"
-                    },
-                    "contents": {
-                      "type": "null"
-                    },
-                    "participants": {
-                      "type": "array"
-                    },
-                    "events": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "notes": {
-                      "type": "null"
-                    },
-                    "created_at": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "updated_at": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "ended_at": {
-                      "type": "null"
-                    },
-                    "url": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "playback": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "history": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "drawing": {
-                      "type": "null"
-                    },
-                    "type": {
-                      "type": "string"
-                    },
-                    "question_ids": {
-                      "type": "array"
-                    },
-                    "pad_environment_ids": {
-                      "type": "array",
-                      "items": {
-                        "type": "integer"
-                      }
-                    },
-                    "active_environment_id": {
-                      "type": "null"
-                    },
-                    "team": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/PadResponse"
                 },
                 "example": {
                   "status": "OK",
@@ -1203,130 +1001,66 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "id": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "state": {
-                      "type": "string"
-                    },
-                    "owner_email": {
-                      "type": "string",
-                      "format": "email"
-                    },
-                    "language": {
-                      "type": "string"
-                    },
-                    "private": {
-                      "type": "boolean"
-                    },
-                    "execution_enabled": {
-                      "type": "boolean"
-                    },
-                    "contents": {
-                      "type": "null"
-                    },
-                    "participants": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "events": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "notes": {
-                      "type": "null"
-                    },
-                    "created_at": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "updated_at": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "ended_at": {
-                      "type": "null"
-                    },
-                    "url": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "playback": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "drawing": {
-                      "type": "null"
-                    },
-                    "type": {
-                      "type": "string"
-                    },
-                    "question_ids": {
-                      "type": "array"
-                    },
-                    "pad_environment_ids": {
-                      "type": "array",
-                      "items": {
-                        "type": "integer"
-                      }
-                    },
-                    "active_environment_id": {
-                      "type": "integer"
-                    },
-                    "team": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/PadResponse"
                 },
-                "example": {
-                  "status": "OK",
-                  "id": "983SDkjdsh",
-                  "title": "Untitled Pad - 983SDkjdsh",
-                  "state": "pending",
-                  "owner_email": "some.person@coderpad.io",
-                  "language": "postgresql",
-                  "private": true,
-                  "execution_enabled": true,
-                  "contents": null,
-                  "participants": [
-                    "some.person"
-                  ],
-                  "events": "https://app.coderpad.io/api/pads/983SDkjdsh/events",
-                  "notes": null,
-                  "created_at": "2023-08-02T10:27:51Z",
-                  "updated_at": "2023-08-02T10:29:49Z",
-                  "ended_at": null,
-                  "url": "https://coderpad.io/983SDkjdsh",
-                  "playback": "https://coderpad.io/983SDkjdsh/playback",
-                  "drawing": null,
-                  "type": "live",
-                  "question_ids": [],
-                  "pad_environment_ids": [
-                    1234567,
-                    7654321
-                  ],
-                  "active_environment_id": 1234567,
-                  "team": {
-                    "id": "68264172-5a54-4ac3-962b-cb8d1ad15d05",
-                    "name": "Main Team"
+                "examples": {
+                  "withoutAnalytics": {
+                    "value": {
+                      "status": "OK",
+                      "id": "AFQ2K9A3",
+                      "title": "Interview",
+                      "allowed_interviewer_emails": []
+                    }
+                  },
+                  "unavailableTranscript": {
+                    "value": {
+                      "status": "OK",
+                      "id": "AFQ2K9A3",
+                      "transcript_source_unavailable": true
+                    }
+                  },
+                  "analytics": {
+                    "value": {
+                      "status": "OK",
+                      "id": "AFQ2K9A3",
+                      "interview_highlights": "Explained the tradeoffs.",
+                      "interview_outline": {
+                        "sections": [
+                          {
+                            "title": "Implementation",
+                            "timestamp": 1790000000000
+                          }
+                        ]
+                      },
+                      "transcript": [
+                        {
+                          "id": "entry-1",
+                          "kind": "transcript",
+                          "speaker_name": null,
+                          "speaker_role": "candidate",
+                          "text": "I would use a map.",
+                          "timestamp": 1790000000000
+                        }
+                      ],
+                      "review_reports": [
+                        {
+                          "id": "report-1",
+                          "status": "failed",
+                          "title": null,
+                          "prompt": null,
+                          "report": null,
+                          "summary": null,
+                          "icon": null,
+                          "error": "Not available",
+                          "user_id": null,
+                          "file_paths": [
+                            "main.py"
+                          ],
+                          "created_at": "2026-10-06T12:00:00Z",
+                          "updated_at": "2026-10-06T12:00:01Z"
+                        }
+                      ]
+                    }
                   }
                 }
               }
@@ -1550,12 +1284,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/PadResponse"
                 },
                 "example": {
                   "status": "OK"
@@ -2312,115 +2041,59 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "owner_email": {
-                      "type": "string",
-                      "format": "email"
-                    },
-                    "language": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "candidate_instructions": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "instructions": {
-                            "type": "string",
-                            "format": "style"
-                          },
-                          "default_visible": {
-                            "type": "boolean"
-                          }
+                  "$ref": "#/components/schemas/QuestionResponse"
+                },
+                "examples": {
+                  "templateDefaults": {
+                    "value": {
+                      "status": "OK",
+                      "id": 7,
+                      "title": "Project exercise",
+                      "language": "multifile_python",
+                      "file_contents": []
+                    }
+                  },
+                  "projectOverlay": {
+                    "value": {
+                      "status": "OK",
+                      "id": 7,
+                      "title": "Project exercise",
+                      "candidate_instructions": [
+                        {
+                          "instructions": "Implement the function.",
+                          "name": "Part one"
                         }
-                      }
-                    },
-                    "contents": {
-                      "type": "string"
-                    },
-                    "shared": {
-                      "type": "boolean"
-                    },
-                    "used": {
-                      "type": "integer"
-                    },
-                    "take_home": {
-                      "type": "boolean"
-                    },
-                    "test_cases_enabled": {
-                      "type": "boolean"
-                    },
-                    "solution": {
-                      "type": "null"
-                    },
-                    "pad_type": {
-                      "type": "string"
-                    },
-                    "is_draft": {
-                      "type": "boolean"
-                    },
-                    "author_name": {
-                      "type": "string"
-                    },
-                    "organization_name": {
-                      "type": "string"
-                    },
-                    "custom_files": {
-                      "type": "array"
-                    },
-                    "ai_assist_custom_system_prompt": {
-                      "type": "string"
-                    },
-                    "created_at": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "updated_at": {
-                      "type": "string",
-                      "format": "date-time"
+                      ],
+                      "file_contents": [
+                        {
+                          "path": "solution.py",
+                          "contents": "# reference",
+                          "hidden": true
+                        },
+                        {
+                          "path": "unused.py",
+                          "deleted": true
+                        }
+                      ]
+                    }
+                  },
+                  "variantSummaries": {
+                    "value": {
+                      "status": "OK",
+                      "id": 7,
+                      "title": "Exercise",
+                      "language": null,
+                      "question_variants": [
+                        {
+                          "id": 9,
+                          "language": null,
+                          "project_template_id": 12,
+                          "project_template_slug": "multifile_python",
+                          "display": "Python project"
+                        }
+                      ]
                     }
                   }
-                },
-                "example": {
-                  "status": "OK",
-                  "id": 123456,
-                  "title": "Parking Lot OO",
-                  "owner_email": "ken@coderpad.io",
-                  "language": "csharp",
-                  "description": "Example coding question testing knowledge of object-oriented principles for use during candidate interviews.",
-                  "candidate_instructions": [
-                    {
-                      "instructions": "Hey candidate! Welcome to your interview. Boilerplate is provided. Feel free to change the code as you see fit. To run the code at any time, please hit the run button located in the top left corner.\n\nGoals:\n  Design a parking lot using object-oriented principles\n\n  Here are a few methods that you should be able to run:\n- Tell us how many spots are remaining\n- Tell us how many total spots are in the parking lot\n- Tell us when the parking lot is full\n- Tell us when the parking lot is empty\n- Tell us when certain spots are full e.g. when all motorcycle spots are taken\n- Tell us how many spots vans are taking up\n\nAssumptions:\n- The parking lot can hold motorcycles, cars and vans\n- The parking lot has motorcycle spots, car spots and large spots\n- A motorcycle can park in any spot\n- A car can park in a single compact spot, or a regular spot\n- A van can park, but it will take up 3 regular spots\n- These are just a few assumptions. Feel free to ask your interviewer about more assumptions as needed \n",
-                      "default_visible": true
-                    }
-                  ],
-                  "contents": "using System;\n\n// To execute C#, please define \"static void Main\" on a class\n// named Solution.\n\nclass Solution\n{\n    static void Main(string[] args)\n    {\n        for (var i = 0; i < 5; i++)\n        {\n            Console.WriteLine(\"Hello, World\");\n        }\n    }\n}\n",
-                  "shared": true,
-                  "used": 1,
-                  "take_home": false,
-                  "test_cases_enabled": false,
-                  "solution": null,
-                  "pad_type": "any",
-                  "is_draft": false,
-                  "author_name": "ken",
-                  "organization_name": "CoderPad",
-                  "custom_files": [],
-                  "ai_assist_custom_system_prompt": "Only provide hints.",
-                  "created_at": "2023-03-13T13:30:18Z",
-                  "updated_at": "2023-03-13T13:32:06Z"
                 }
               }
             }
@@ -2641,12 +2314,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/QuestionResponse"
                 },
                 "example": {
                   "status": "OK"
@@ -3013,151 +2681,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "questions": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "owner_email": {
-                            "type": "string",
-                            "format": "email"
-                          },
-                          "language": {
-                            "type": "string"
-                          },
-                          "description": {
-                            "type": "string"
-                          },
-                          "candidate_instructions": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "instructions": {
-                                  "type": "string"
-                                },
-                                "default_visible": {
-                                  "type": "boolean"
-                                }
-                              }
-                            }
-                          },
-                          "contents": {
-                            "type": "null"
-                          },
-                          "shared": {
-                            "type": "boolean"
-                          },
-                          "used": {
-                            "type": "integer"
-                          },
-                          "take_home": {
-                            "type": "boolean"
-                          },
-                          "test_cases_enabled": {
-                            "type": "boolean"
-                          },
-                          "solution": {
-                            "type": "string"
-                          },
-                          "pad_type": {
-                            "type": "string"
-                          },
-                          "is_draft": {
-                            "type": "boolean"
-                          },
-                          "author_name": {
-                            "type": "string"
-                          },
-                          "organization_name": {
-                            "type": "string"
-                          },
-                          "custom_files": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "id": {
-                                  "type": "string"
-                                },
-                                "title": {
-                                  "type": "string"
-                                },
-                                "description": {
-                                  "type": "string"
-                                },
-                                "filename": {
-                                  "type": "string"
-                                },
-                                "filesize": {
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          },
-                          "public_take_home_setting_id": {
-                            "type": "integer"
-                          },
-                          "contents_for_test_cases": {
-                            "type": "string"
-                          },
-                          "test_cases": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "id": {
-                                  "type": "integer"
-                                },
-                                "return_value": {
-                                  "type": "string"
-                                },
-                                "visible": {
-                                  "type": "boolean"
-                                },
-                                "arguments": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string",
-                                    "format": "utc-millisec"
-                                  }
-                                }
-                              }
-                            }
-                          },
-                          "ai_assist_custom_system_prompt": {
-                            "type": "string"
-                          },
-                          "created_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "updated_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          }
-                        }
-                      }
-                    },
-                    "next_page": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "total": {
-                      "type": "integer"
-                    }
-                  }
+                  "$ref": "#/components/schemas/QuestionList"
                 },
                 "example": {
                   "status": "OK",
@@ -3527,75 +3051,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "owner_email": {
-                      "type": "string",
-                      "format": "email"
-                    },
-                    "language": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "null"
-                    },
-                    "candidate_instructions": {
-                      "type": "array"
-                    },
-                    "contents": {
-                      "type": "null"
-                    },
-                    "shared": {
-                      "type": "boolean"
-                    },
-                    "used": {
-                      "type": "integer"
-                    },
-                    "take_home": {
-                      "type": "boolean"
-                    },
-                    "test_cases_enabled": {
-                      "type": "boolean"
-                    },
-                    "solution": {
-                      "type": "null"
-                    },
-                    "pad_type": {
-                      "type": "string"
-                    },
-                    "is_draft": {
-                      "type": "boolean"
-                    },
-                    "author_name": {
-                      "type": "string"
-                    },
-                    "organization_name": {
-                      "type": "string"
-                    },
-                    "custom_files": {
-                      "type": "array"
-                    },
-                    "ai_assist_custom_system_prompt": {
-                      "type": "string"
-                    },
-                    "created_at": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "updated_at": {
-                      "type": "string",
-                      "format": "date-time"
-                    }
-                  }
+                  "$ref": "#/components/schemas/QuestionResponse"
                 },
                 "example": {
                   "status": "OK",
@@ -4547,120 +4003,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "pads": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "state": {
-                            "type": "string"
-                          },
-                          "owner_email": {
-                            "type": "string",
-                            "format": "email"
-                          },
-                          "language": {
-                            "type": "null"
-                          },
-                          "private": {
-                            "type": "boolean"
-                          },
-                          "execution_enabled": {
-                            "type": "boolean"
-                          },
-                          "contents": {
-                            "type": "null"
-                          },
-                          "participants": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "events": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "notes": {
-                            "type": "string"
-                          },
-                          "created_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "updated_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "ended_at": {
-                            "type": "null"
-                          },
-                          "url": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "playback": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "history": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "drawing": {
-                            "type": "null"
-                          },
-                          "type": {
-                            "type": "string"
-                          },
-                          "question_ids": {
-                            "type": "array",
-                            "items": {
-                              "type": "integer"
-                            }
-                          },
-                          "pad_environment_ids": {
-                            "type": "array",
-                            "items": {
-                              "type": "integer"
-                            }
-                          },
-                          "active_environment_id": {
-                            "type": "integer"
-                          },
-                          "team": {
-                            "type": "object",
-                            "properties": {
-                              "id": {
-                                "type": "string"
-                              },
-                              "name": {
-                                "type": "string"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "next_page": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "total": {
-                      "type": "integer"
-                    }
-                  }
+                  "$ref": "#/components/schemas/PadsPage"
                 },
                 "example": {
                   "status": "OK",
@@ -4947,90 +4290,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "questions": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "owner_email": {
-                            "type": "string",
-                            "format": "email"
-                          },
-                          "language": {
-                            "type": "string"
-                          },
-                          "description": {
-                            "type": "null"
-                          },
-                          "candidate_instructions": {
-                            "type": "array"
-                          },
-                          "contents": {
-                            "type": "null"
-                          },
-                          "shared": {
-                            "type": "boolean"
-                          },
-                          "used": {
-                            "type": "integer"
-                          },
-                          "take_home": {
-                            "type": "boolean"
-                          },
-                          "test_cases_enabled": {
-                            "type": "boolean"
-                          },
-                          "solution": {
-                            "type": "null"
-                          },
-                          "pad_type": {
-                            "type": "string"
-                          },
-                          "is_draft": {
-                            "type": "boolean"
-                          },
-                          "author_name": {
-                            "type": "string"
-                          },
-                          "organization_name": {
-                            "type": "string"
-                          },
-                          "custom_files": {
-                            "type": "array"
-                          },
-                          "ai_assist_custom_system_prompt": {
-                            "type": "string"
-                          },
-                          "created_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "updated_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          }
-                        }
-                      }
-                    },
-                    "next_page": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "total": {
-                      "type": "integer"
-                    }
-                  }
+                  "$ref": "#/components/schemas/QuestionList"
                 },
                 "example": {
                   "status": "OK",
@@ -6303,6 +5563,710 @@
             "description": "A human-readable description of the error."
           }
         }
+      },
+      "Timestamp": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-09-30T14:02:11Z"
+      },
+      "Team": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "PadInterviewerNotification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "message": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "priority": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "request_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "useful": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "The interviewer's feedback on the notification, if any."
+          },
+          "auto_dismissed": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "dismissed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "Pad": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The pad ID, as shown in the pad URL.",
+            "example": "AFQ2K9A3"
+          },
+          "title": {
+            "type": "string",
+            "example": "Backend interview"
+          },
+          "state": {
+            "type": "string",
+            "description": "`pending`: not started yet. `started`: a participant has joined. `ended`: the interview has ended. `opened_take_home` and `submitted_take_home`: take-home progress. `deleted`: the pad was deleted.\n",
+            "enum": [
+              "pending",
+              "started",
+              "ended",
+              "deleted",
+              "opened_take_home",
+              "submitted_take_home"
+            ]
+          },
+          "owner_email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "email"
+          },
+          "language": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The pad language. `null` for pads with multiple environments; see `pad_environment_ids`."
+          },
+          "private": {
+            "type": "boolean",
+            "description": "Whether the waiting room is enabled, so that guests must be admitted before joining the pad."
+          },
+          "execution_enabled": {
+            "type": "boolean"
+          },
+          "restrict_interviewer_access": {
+            "type": "boolean",
+            "description": "Whether only the owner and `allowed_interviewer_emails` can access the pad as interviewers."
+          },
+          "contents": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The code of single-environment pads. `null` for pads with environments; use `GET /pad_environments/{id}`."
+          },
+          "participants": {
+            "type": "array",
+            "description": "Names of the people who joined the pad.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "events": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the pad's events (`GET /pads/{id}/events`)."
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Private interviewer notes, in Markdown. Only returned to the pad owner."
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "ended_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the pad."
+          },
+          "playback": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the pad playback."
+          },
+          "history": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the raw edit history of single-environment pads."
+          },
+          "drawing": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "Temporary URL (valid 5 minutes) of the drawing made in the pad, if any."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "live",
+              "take_home",
+              "drawing",
+              "no_code"
+            ]
+          },
+          "question_ids": {
+            "type": "array",
+            "description": "IDs of the question bank questions added to the pad.",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "pad_environment_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "active_environment_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "allowed_interviewer_emails": {
+            "type": "array",
+            "description": "Interviewers allowed on the pad when `restrict_interviewer_access` is enabled.",
+            "items": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "team": {
+            "anyOf": [
+              {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Team"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pad_interviewer_notifications": {
+            "type": "array",
+            "description": "Notifications shown to interviewers during the interview.",
+            "items": {
+              "$ref": "#/components/schemas/PadInterviewerNotification"
+            }
+          }
+        }
+      },
+      "TranscriptEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "transcript",
+              "system_message"
+            ]
+          },
+          "speaker_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "speaker_role": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "interviewer",
+              "candidate",
+              null
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "Unix timestamp in milliseconds."
+          }
+        }
+      },
+      "ReviewReport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "prompt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "report": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "summary": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "user_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "file_paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "PadResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Ok"
+          },
+          {
+            "$ref": "#/components/schemas/Pad"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "interview_highlights": {
+                "type": "string",
+                "description": "AI-generated summary of the interview. Insights & Analytics only."
+              },
+              "interview_outline": {
+                "description": "AI-generated outline of the interview. Insights & Analytics only."
+              },
+              "transcript": {
+                "type": "array",
+                "description": "The interview transcript. Insights & Analytics only.",
+                "items": {
+                  "$ref": "#/components/schemas/TranscriptEntry"
+                }
+              },
+              "transcript_source_unavailable": {
+                "type": "boolean",
+                "description": "Present and `true` when the transcript could not be retrieved."
+              },
+              "review_reports": {
+                "type": "array",
+                "description": "AI review reports of the pad. Only returned to the pad owner.",
+                "items": {
+                  "$ref": "#/components/schemas/ReviewReport"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Question": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "owner_email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "email"
+          },
+          "language": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The question language, or the project template slug for project template questions, as accepted on creation. `null` for questions with variants."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Description of the question, only shown to interviewers."
+          },
+          "candidate_instructions": {
+            "type": "array",
+            "description": "Instructions shown to the candidate.",
+            "items": {
+              "$ref": "#/components/schemas/CandidateInstruction"
+            }
+          },
+          "contents": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Starter code of single-file questions."
+          },
+          "shared": {
+            "type": "boolean",
+            "description": "Whether the question is shared with your organization."
+          },
+          "used": {
+            "type": "integer",
+            "description": "Number of pads the question was used in."
+          },
+          "take_home": {
+            "type": "boolean"
+          },
+          "test_cases_enabled": {
+            "type": "boolean"
+          },
+          "solution": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pad_type": {
+            "$ref": "#/components/schemas/QuestionPadType"
+          },
+          "is_draft": {
+            "type": "boolean"
+          },
+          "ai_assist_custom_system_prompt": {
+            "type": "string",
+            "description": "Custom AI Assist system prompt. Only present when set."
+          },
+          "author_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "organization_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "custom_database": {
+            "type": "object",
+            "description": "The custom database attached to the question, if any.",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "language": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "schema": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "schema_json": {
+                "description": "The database schema, as JSON."
+              }
+            }
+          },
+          "custom_files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "filename": {
+                  "type": "string"
+                },
+                "filesize": {
+                  "type": "string",
+                  "description": "Human-readable file size.",
+                  "example": "6.11 KB"
+                }
+              }
+            }
+          },
+          "question_variants": {
+            "type": "array",
+            "description": "Summary of the question's variants. See `GET /questions/{question_id}/variants` for their code.",
+            "items": {
+              "$ref": "#/components/schemas/QuestionVariantSummary"
+            }
+          },
+          "public_take_home_setting_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Only present when `test_cases_enabled` is `true`."
+          },
+          "contents_for_test_cases": {
+            "type": "string",
+            "description": "Starter code generated from the test cases. Only present when `test_cases_enabled` is `true`."
+          },
+          "test_cases": {
+            "type": "array",
+            "description": "Only present when `test_cases_enabled` is `true`.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "return_value": {
+                  "description": "The expected return value of the test case."
+                },
+                "visible": {
+                  "type": "boolean"
+                },
+                "arguments": {
+                  "type": "array",
+                  "items": {}
+                }
+              }
+            }
+          },
+          "file_contents": {
+            "type": "array",
+            "description": "Files of HTML and project template questions. For a project template question, each template file the question removed is listed with `\"deleted\": true`, and the list is empty when the question opens with the unmodified template files.\n",
+            "items": {
+              "$ref": "#/components/schemas/FileContent"
+            }
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        }
+      },
+      "QuestionResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Ok"
+          },
+          {
+            "$ref": "#/components/schemas/Question"
+          }
+        ]
+      },
+      "QuestionList": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginatedResponse"
+          },
+          {
+            "type": "object",
+            "required": [
+              "questions"
+            ],
+            "properties": {
+              "questions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Question"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "PaginatedResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Ok"
+          },
+          {
+            "type": "object",
+            "required": [
+              "total"
+            ],
+            "properties": {
+              "next_page": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL of the next page. Absent on the last page."
+              },
+              "prev_page": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL of the previous page. Absent on the first page."
+              },
+              "total": {
+                "type": "integer",
+                "description": "Total number of items across all pages."
+              }
+            }
+          }
+        ]
+      },
+      "QuestionVariantSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "language": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "project_template_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "project_template_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "display": {
+            "type": "string"
+          }
+        }
+      },
+      "PadsPage": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginatedResponse"
+          },
+          {
+            "type": "object",
+            "required": [
+              "pads"
+            ],
+            "properties": {
+              "pads": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Pad"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "securitySchemes": {
