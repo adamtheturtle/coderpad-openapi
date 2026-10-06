@@ -23,6 +23,21 @@ The SDK and CLI still contain their existing copies.
 Migrating those consumers to this repository is a separate follow-up.
 Creating this repository does not change any installed package.
 
+Request contracts
+-----------------
+
+The Interview contract covers form, multipart, and JSON question writes,
+pad access controls, and take-home creation settings.
+Instruction steps carry names, and project starter-file overlays preserve
+their wire representations.
+JSON requests wrap attributes in ``pad`` or ``question``.
+
+Pad lists support opaque cursor continuations alongside numeric pages.
+Question lists support text search, pad-type filters, and title/usage sorting.
+Organization question lists support language and pad-type filtering.
+``GET /api/user`` describes the API key owner's name and pad-creation capability.
+
+
 Validation
 ----------
 
