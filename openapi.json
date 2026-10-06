@@ -654,7 +654,44 @@
             "BearerAuth": []
           }
         ],
-        "description": "Fetch a list of all of your pads. Returns everything that an individual _Get pads by id_ request does. The only caveat is that the values of fields in the index view are not guaranteed to be 100% real-time. Generally, they should be no more than a minute behind, but if you absolutely require the latest value in a pad, please use the individual _Get pads by id_ endpoint.\n\n```\ncurl \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  <a class=&#x27;preserveHtml&#x27; class=&#x27;preserveHtml&#x27; target=\"_blank\"  rel=\"noreferrer noopener\" href=\"https://app.coderpad.io/api/pads?sort=updated_at,descThis\">https://app.coderpad.io/api/pads?sort=updated_at,desc</a>\n\n ```\n\nThis API endpoint takes an optional `sort` parameter, which allows you to sort by either the `created_at` or `updated_at` fields on your pads. Adding a comma will allow you to change the sort direction, which is `desc` by default. For example, to sort your pads by `updated_at` from oldest to newest, specify `updated_at,asc`.\n\nIf no `sort` parameter is provided, `created_at,desc` is assumed.\n\nThe method also returns paginated results - no more than 50 per request. If you want more, follow the `next_page` or `prev_page` urls if present. The API also returns a `total` count to give you a sense of how many pads you have created.\n\n``` json\n{\n  \"status\": \"OK\",\n  \"pads\": [\n    // ... your pads, with the same data format as in `show`\n  ],\n  \"next_page\": \"https://app.coderpad.io/api/pads?sort=updated_at,desc&page=2\",\n  \"total\": 420\n}\n\n ```"
+        "description": "Lists the pads visible to you, with the same fields as `GET /pads/{id}`.\n\nValues in this list can be up to a minute out of date. If you need the latest values, retrieve the pad individually.\n\nTo go through all your pads, follow the `next_page` URL of each response until it is no longer returned. This is the recommended way to paginate: `next_page` points to the next page with a `cursor`, which stays fast however many pads you have.\n\nRequesting a `page` number is also supported, but gets slower as the page number grows. `prev_page` is only returned when you use `page`.\n",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "`created_at` or `updated_at`, optionally followed by `,asc` or `,desc` (descending by default). For example, `updated_at,asc` sorts from least to most recently updated.\n",
+            "schema": {
+              "type": "string",
+              "default": "created_at,desc",
+              "enum": [
+                "created_at",
+                "created_at,asc",
+                "created_at,desc",
+                "updated_at",
+                "updated_at,asc",
+                "updated_at,desc"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "One-based page number.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Position of the next page, as returned in the `next_page` URL of the previous response. Follow `next_page` rather than building this value yourself. When set, `sort` and `page` are ignored.\n",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       },
       "post": {
         "summary": "Create a pad",
@@ -663,6 +700,33 @@
             "application/x-www-form-urlencoded": {
               "schema": {
                 "$ref": "#/components/schemas/PadCreateForm"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "pad"
+                ],
+                "properties": {
+                  "pad": {
+                    "$ref": "#/components/schemas/PadCreateRequest"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "pad": {
+                  "title": "Take-home interview",
+                  "question_id": 123,
+                  "private": true,
+                  "allowed_interviewer_emails": [
+                    "interviewer@example.com"
+                  ],
+                  "restrict_interviewer_access": true,
+                  "take_home": true,
+                  "take_home_time_limit": 60
+                }
               }
             }
           }
@@ -969,7 +1033,7 @@
             "BearerAuth": []
           }
         ],
-        "description": "Create a new pad. You can set some initial conditions as well.\n\n```\ncurl \\\n  --data title=\"Rob Zombie's Interview\" \\\n  --data language=\"ruby\" \\\n  --data contents=\"print 'Hello, World'\" \\\n  --data notes=\"Your private notes\" \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  https://app.coderpad.io/api/pads\n\n ```\n\nreturns\n\n``` json\n{\n  \"status\": \"OK\",\n  \"id\": \"AFQ2K9A3\",\n  \"title\": \"Rob Zombie's Interview\",\n  \"owner_email\": \"fbueller@gmail.com\",\n  \"language\": \"ruby\",\n  \"participants\": [\"vincent\"],\n  \"contents\": \"print 'Hello, World'\",\n  \"notes\": \"Your private notes\",\n  \"events\": \"https://app.coderpad.io/api/pads/AFQ2K9A3/events\",\n  \"private\": false,\n  \"execution_enabled\": true,\n  \"created_at\": \"2014-11-14T03:02:45Z\",\n  \"updated_at\": \"2014-11-14T03:02:45Z\",\n  \"ended_at\": null,\n  \"url\": \"https://coderpad.io/AFQ2K9A3\",\n  \"playback\": \"https://coderpad.io/AFQ2K9A3/playback\",\n  \"history\": \"https://coderpad.firebaseio.com/AFQ2K9A3/history.json\",\n  \"drawing\": null,\n  \"pad_environment_ids\": [\n    1234567,\n    7654321\n  ],\n  \"active_environment_id\": 1234567,\n  \"team\": {\n    \"id\": \"68264172-5a54-4ac3-962b-cb8d1ad15d05\",\n    \"name\": \"Main Team\"\n  }\n}\n\n ```\n\nThis method can return a quota exceeded error if you are over your used pad limit for the month."
+        "description": "Creates a pad owned by you, or by another user of your organization with `user_email`. Creating a pad counts towards your pad quota.\n\nFields you omit use your account defaults (privacy, code execution, language) and your organization's AI Assist setting.\n\nA pad can start either with `contents` or with a question from your question bank (`question_id`), not both.\n"
       }
     },
     "/api/pads/{id}": {
@@ -1299,6 +1363,26 @@
               "schema": {
                 "$ref": "#/components/schemas/PadUpdateForm"
               }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "pad"
+                ],
+                "properties": {
+                  "pad": {
+                    "$ref": "#/components/schemas/PadUpdateRequest"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "pad": {
+                  "execution_enabled": "false",
+                  "allowed_interviewer_emails": []
+                }
+              }
             }
           }
         },
@@ -1489,7 +1573,7 @@
             "BearerAuth": []
           }
         ],
-        "description": "Modifies an existing pad. You can specify any of the valid parameters you used to create the pad.\n\nYou may also use this endpoint to end the interview, by setting the `ended` attribute to `true`, or delete the interview, by setting the `deleted` attribute to `true`. Values other than `true` will be ignored.\n\n```\ncurl \\\n  -X PUT --data title=\"Interview with Greg\" \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  https://app.coderpad.io/api/pads/AFQ2K9A3\n\n ```\n\nPlease note that resetting the contents in the middle of an ongoing interview session will probably break something. It will also destroy the history for that pad. Use with caution."
+        "description": "Updates, ends or deletes a pad. Only the fields you send are changed.\n\nYou can update your own pads. Organization owners can update any pad of their organization.\n"
       }
     },
     "/api/pads/{id}/events": {
@@ -1772,7 +1856,36 @@
             "BearerAuth": []
           }
         ],
-        "description": "Returns detail about important **events** that transpired throughout the lifetime of the pad. It is represented as an array of objects with the following fields:\n\n| Field | Description |\n| --- | --- |\n| message | `string` The human-readable string version of the event. |\n| kind | `string`Can be one of:  <br>  <br>\\- `joined`: when a user browses to a pad  <br>\\- `left`: when a user closes the browser tab  <br>\\- `ran`: when a user executes code  <br>\\- `enabled`: when the pad owner enables code execution  <br>\\- `disabled`: when the pad owner disables code execution  <br>\\- `ended`: when the pad owner ends the interview |\n| metadata | `string` Additional information associated with the event. In the case of a `ran` event, this will be the programming language run, for `joined` this can be `invisible` if a user joins in spectator mode. |\n| user_name | `string` Name of the user performing the event, will always be present. |\n| user_email | `string` If the user is logged in, this will be their email at the time of the event. |\n| created_at | `datetime` When the event occurred. |\n\nThis endpoint supports sorting and pagination similar to the `/api/pads/` endpoint."
+        "description": "Lists the events of a pad, such as participants joining or leaving, code runs and questions being added.",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "`created_at` or `updated_at`, optionally followed by `,asc` or `,desc` (descending by default). For example, `updated_at,asc` sorts from least to most recently updated.\n",
+            "schema": {
+              "type": "string",
+              "default": "created_at,desc",
+              "enum": [
+                "created_at",
+                "created_at,asc",
+                "created_at,desc",
+                "updated_at",
+                "updated_at,asc",
+                "updated_at,desc"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "One-based page number.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ]
       },
       "parameters": [
         {
@@ -2347,6 +2460,26 @@
               "schema": {
                 "$ref": "#/components/schemas/QuestionForm"
               }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "question"
+                ],
+                "properties": {
+                  "question": {
+                    "$ref": "#/components/schemas/QuestionWriteRequest"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "question": {
+                  "shared": true,
+                  "custom_database_id": 123
+                }
+              }
             }
           }
         },
@@ -2531,7 +2664,7 @@
             "BearerAuth": []
           }
         ],
-        "description": "Modifies an existing question. You can specify any of the valid parameters to `create`.\n\n```\ncurl \\\n  -X PUT --data description=\"We've noticed candidates from the West coast have substantial experience with avocados, so this question is worth less points now.\" \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  https://app.coderpad.io/api/questions/42\n\n ```"
+        "description": "Updates a question. Only the fields you send are changed.\n\nFor a project template question, `file_contents` or `zip_file` replaces all of the question's files. In `file_contents`, entries marked `\"deleted\": true` are ignored. To reuse a response's `file_contents`, JSON-encode the array as the request's `file_contents` string. `.cpad` cannot be marked deleted, and at least one file must remain. An empty array, encoded as `\"[]\"`, resets the question to the template's own files.\n"
       },
       "delete": {
         "summary": "Delete a question",
@@ -3134,7 +3267,49 @@
             "BearerAuth": []
           }
         ],
-        "description": "Fetch a list of all of your questions. Returns all fields that an individual _Get question by id_ request does.\n\n```\ncurl \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  https://app.coderpad.io/api/questions?sort=updated_at,desc\n\n ```\n\n`index` takes an optional `sort` parameter, which allows you to sort by either the `created_at` or `updated_at` fields on the questions. Adding a comma will allow you to change the sort direction, which is `desc` by default. For example, to sort your questions by `updated_at` from oldest to newest, specify `updated_at,asc`.\n\nIf no `sort` parameter is provided, `created_at,desc` is assumed.\n\nThe method also returns paginated results - no more than 50 per request. If you want more, follow the `next_page` or `prev_page` urls if present. The API also returns a `total` count to give you a sense of how many questions exist.\n\n``` json\n{\n  \"status\": \"OK\",\n  \"questions\": [\n    // ... your questions, with the same data format as in `show`\n  ],\n  \"next_page\": \"https://app.coderpad.io/api/question?sort=updated_at,desc&page=2\",\n  \"total\": 420\n}\n\n ```"
+        "description": "Lists the published questions visible to you.",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "A question field such as `created_at`, `updated_at`, `title` or `used`, optionally followed by `,asc` or `,desc`. Defaults to the most used questions first.\n",
+            "schema": {
+              "type": "string",
+              "example": "updated_at,desc"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "One-based page number.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "text",
+            "in": "query",
+            "description": "Only return questions matching this search text.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pad_types[]",
+            "in": "query",
+            "description": "Only return questions usable in these types of pad.",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/QuestionPadType"
+              }
+            }
+          }
+        ]
       },
       "post": {
         "summary": "Create a question",
@@ -3157,6 +3332,39 @@
                   "question[title]",
                   "question[language]"
                 ]
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "question"
+                ],
+                "properties": {
+                  "question": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/QuestionWriteRequest"
+                      },
+                      {
+                        "required": [
+                          "title",
+                          "language"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "example": {
+                "question": {
+                  "title": "Project exercise",
+                  "language": "multifile_python",
+                  "candidate_instructions": "[{\"instructions\": \"Complete the function.\", \"name\": \"Part one\", \"default_visible\": true}]",
+                  "file_contents": "[{\"path\": \"solution.py\", \"contents\": \"# reference\", \"hidden\": true}, {\"path\": \"unused.py\", \"deleted\": true}]",
+                  "shared": false
+                }
               }
             }
           }
@@ -3425,7 +3633,7 @@
             "BearerAuth": []
           }
         ],
-        "description": "Create a new question.\n\n```\ncurl \\\n  --data title=\"Are avocados fruity?\" \\\n  --data description=\"Fruit puzzler round 2\" \\\n  --data language=\"ruby\" \\\n  --data contents=\"def is_fruity?(thing);\\n  end\\n\" \\\n  --data solution=\"This is the solution\" \\\n  --data candidate_instructions=\"[{'instructions': 'Implement the is_fruity method'}]\" \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  https://app.coderpad.io/api/questions\n\n ```\n\nreturns the question just created:\n\n``` json\n{\n  \"status\": \"OK\",\n  \"id\": 7,\n  \"title\": \"Are avocados fruity?\",\n  \"owner_email\": \"alice@fruits-party.io\",\n  \"language\": \"ruby\",\n  \"description\": \"Fruit puzzler round 2\",\n  \"contents\": \"def is_fruity?(thing);\\n  end\\n\",\n  \"shared\": true,\n  \"used\": 0,\n  \"created_at\": \"2019-01-28T21:21:16Z\",\n  \"updated_at\": \"2019-01-28T21:21:16Z\"\n}\n\n ```\n\nThe available paramters you have to configure are detailed below:\n\n| Field | Description |\n| --- | --- |\n| id | `string` Primary key for the object. Use this to query or modify this resource later. |\n| title | `string` Title for this question. |\n| language | `string` One of a [set list](#Languages). |\n| description | `string` Notes for yourself (or colleagues) on what this question is about, and what good and bad answers might look like. |\n| contents | `string` This text is inserted into your interview session if you choose to use this question. |"
+        "description": "Creates a question in your question bank.\n\n- For a single-file language, send the starter code in `contents`.\n- For a project template (for example `multifile_python` or `react`), set `language` to the template slug and send the files either:\n  - in `file_contents`: the files replace the template files with the same path or are added, and the other template files are kept. `\"deleted\": true` removes a template file.\n  - as a zip archive in `zip_file` (multipart request): the archive replaces all the template files, except the template's `.cpad` configuration file, which is kept unless the archive has one. A single enclosing folder is removed from the paths.\n\nFor project template questions, the response's `language` is the template slug, and its `file_contents` is an array of the question's files, with the template files it removed marked `\"deleted\": true`.\n"
       }
     },
     "/api/quota": {
@@ -4153,7 +4361,29 @@
             "BearerAuth": []
           }
         ],
-        "description": "This endpoint returns statistics about how many pads the members of your organization have created. By default the endpoint will return information about the last 7 days, but you can configure the time range as well.\n\n| Parameter | Values |\n| --- | --- |\n| start_time | `datetime` An [ISO 8601 time string](http://www.w3.org/TR/NOTE-datetime), specifying the start of the search window. If this parameter is specified, you must set `end_time` as well, and vice versa. |\n| end_time | `datetime` An ISO 8601 time string specifying the end of the search window. |\n\n```\ncurl \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  \"https://app.coderpad.io/api/organization/stats?\\\nstart_time=2015-12-07T00:31:52Z&\\\nend_time=2015-12-15T00:31:52Z\"\n\n ```\n\nreturns\n\n``` json\n{\n  status: \"OK\",\n  // The computed start/end times are always returned,\n  // even with the default window\n  start_time: 2023-07-23T12:27:05Z,\n  end_time: 2023-07-31T12:27:05Z,\n  pads_created: 137,\n  users: [\n    {\n      email: \"person@place.com\",\n      name: \"Person Surname\",\n      pads_created: 7\n    },\n    {\n      email: \"confidant@place.com\",\n      name: \"Confidant Methodical\",\n      pads_created: 0\n    },\n    // ... followed by the rest of the users in your org\n  ]\n}\n\n ```"
+        "description": "Returns the number of pads created by each user of your organization over a period of time. Defaults to the last 7 days.",
+        "parameters": [
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Start of the period. Required when `end_time` is set.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-09-01T00:00:00Z"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "description": "End of the period. Required when `start_time` is set.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-09-30T00:00:00Z"
+            }
+          }
+        ]
       }
     },
     "/api/organization/pads": {
@@ -4524,7 +4754,36 @@
             "BearerAuth": []
           }
         ],
-        "description": "This endpoint is similar to the _Get a list of pads_ operation, except that it returns all the pads in your organization. To access this endpoint, your user must be an organization owner, or your organization must allow all pads to be visible to its users. This last setting is default on, but you can [email us](https://mailto:support@coderpad.io) to disable this feature.\n\nThe endpoint also performs sorting and pagination identically to _Get a list of pads_.\n\n```\ncurl \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  \"https://app.coderpad.io/api/organization/pads?sort=updated_at,desc\"\n\n ```\n\nreturns\n\n``` json\n{\n  \"status\": \"OK\",\n  \"pads\": [\n    {\n      \"id\": \"PP7J474P\",\n      \"title\": \"JavaScript Test\",\n      \"owner_email\": \"kristin@coderpad.io\",\n      \"language\": \"javascript\",\n      \"participants\": [\"Kristin\", \"Guest 104\"],\n      \"contents\": \"var _ = require('underscore');\\n...\",\n      \"private\": false,\n      \"execution_enabled\": true,\n      \"events\": \"https://app.coderpad.io/api/pads/PP7J474P/events\",\n      \"notes\": \"Brenda did a fantastic job talking through the prompt ...\",\n      \"created_at\": \"2018-02-13T02:06:30Z\",\n      \"updated_at\": \"2018-02-13T06:21:26Z\",\n      \"ended_at\": null,\n      \"url\": \"https://coderpad.io/PP7J474P\",\n      \"playback\": \"https://coderpad.io/PP7J474P/playback\",\n      \"history\": \"https://coderpadproject.firebaseio.com/PP7J474P/history.json\",\n      \"drawing\": \"https://storage.googleapis.com/...\",\n      \"team\": {\n        \"id\": \"68264172-5a54-4ac3-962b-cb8d1ad15d05\",\n        \"name\": \"Main Team\"\n      }\n    }\n    // ... followed by a list of the rest of the pads in the organization\n  ],\n  \"next_page\": \"https://app.coderpad.io/api/organization/pads?sort=updated_at,desc&page=2\",\n  \"total\": 512\n}\n\n ```"
+        "description": "Lists the pads of every user in your organization. Only available to organization owners, unless your organization enables pad index access for everyone.",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "`created_at` or `updated_at`, optionally followed by `,asc` or `,desc` (descending by default). For example, `updated_at,asc` sorts from least to most recently updated.\n",
+            "schema": {
+              "type": "string",
+              "default": "created_at,desc",
+              "enum": [
+                "created_at",
+                "created_at,asc",
+                "created_at,desc",
+                "updated_at",
+                "updated_at,asc",
+                "updated_at,desc"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "One-based page number.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ]
       }
     },
     "/api/organization/questions": {
@@ -4875,7 +5134,56 @@
             "BearerAuth": []
           }
         ],
-        "description": "This endpoint is similar to [<i>GET /api/questions</i>](#d2fa48b3-dbfe-4b9b-af97-9a4df8562f1e), except that it returns all the questions in your organization visible to you. You\u2019ll see your own questions as well as colleagues\u2019 questions where the `shared` boolean is set to `true`. If you are an organization owner, you can see every question in the organization.\n\nThe endpoint also performs sorting and pagination identically to [<i>GET /api/questions</i>](#d2fa48b3-dbfe-4b9b-af97-9a4df8562f1e).\n\n```\ncurl \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  \"https://app.coderpad.io/api/organization/questions?sort=updated_at,desc\"\n\n ```\n\nreturns\n\n```\n{\n  \"status\": \"OK\",\n  \"questions\": [\n    {\n      \"id\": 12,\n      \"title\": \"Are avocados fruity?\",\n      \"owner_email\": \"alice@fruits-party.io\",\n      \"language\": \"ruby\",\n      \"description\": \"Fruit puzzler round 2?\",\n      \"contents\": \"def is_fruity?(thing);\\\\n  end\\\\n\",\n      \"shared\": true,\n      \"used\": 0,\n      \"created_at\": \"2019-01-28T22:08:09Z\",\n      \"updated_at\": \"2019-01-28T22:08:09Z\"\n    }\n    // ... followed by the rest of the questions in the organization visible to you\n  ],\n  \"next_page\": \"https://app.coderpad.io/api/organization/questions?sort=updated_at,desc&page=2\",\n  \"total\": 256\n}\n\n ```"
+        "description": "Lists the published questions of your organization that are visible to you.",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "`created_at` or `updated_at`, optionally followed by `,asc` or `,desc` (descending by default). For example, `updated_at,asc` sorts from least to most recently updated.\n",
+            "schema": {
+              "type": "string",
+              "default": "created_at,desc",
+              "enum": [
+                "created_at",
+                "created_at,asc",
+                "created_at,desc",
+                "updated_at",
+                "updated_at,asc",
+                "updated_at,desc"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "One-based page number.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "pad_type",
+            "in": "query",
+            "description": "Only return questions usable in this type of pad (questions usable in any pad are always included).",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "live",
+                "take_home"
+              ]
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Only return questions in this language or project template.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     },
     "/api/organization/users": {
@@ -5109,7 +5417,89 @@
             "BearerAuth": []
           }
         ],
-        "description": "This endpoint is similar to [<i>GET /api/organization</i>](#d2fa48b3-dbfe-4b9b-af97-9a4df8562f1e), except that it returns only the users list of that organization. If the `email` attribute is set, it returns only the user corresponding to that email.\n\n```\ncurl \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  \"https://app.coderpad.io/api/organization/pads?email=buddy@company.io\"\n\n ```\n\nreturns\n\n```\n{\n    \"status\": \"OK\",\n    \"users\": [\n        {\n            \"email\": \"buddy@company.io\",\n            \"name\": \"Buddy\",\n            \"teams\": [\n                \"68264172-5a54-4ac3-962b-cb8d1ad15d05\",\n                \"ddc4ce0a-93ec-4bad-9a1a-3d2db96f6220\"\n            ]\n        }\n    ]    \n}\n\n ```"
+        "description": "This endpoint is similar to [<i>GET /api/organization</i>](#d2fa48b3-dbfe-4b9b-af97-9a4df8562f1e), except that it returns only the users list of that organization. If the `email` attribute is set, it returns only the user corresponding to that email.\n\n```\ncurl \\\n  -H 'Authorization: Token token=\"8af9a3412559d803707937250dc1569d\"' \\\n  \"https://app.coderpad.io/api/organization/pads?email=buddy@company.io\"\n\n ```\n\nreturns\n\n```\n{\n    \"status\": \"OK\",\n    \"users\": [\n        {\n            \"email\": \"buddy@company.io\",\n            \"name\": \"Buddy\",\n            \"teams\": [\n                \"68264172-5a54-4ac3-962b-cb8d1ad15d05\",\n                \"ddc4ce0a-93ec-4bad-9a1a-3d2db96f6220\"\n            ]\n        }\n    ]    \n}\n\n ```",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Only return the user with this email address.",
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        ]
+      }
+    },
+    "/api/user": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "getUser",
+        "summary": "Retrieve the current user",
+        "description": "Returns the user the API key belongs to.",
+        "responses": {
+          "200": {
+            "description": "The user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Ok"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "allow_pad_creation",
+                        "analytics_id"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "allow_pad_creation": {
+                          "type": "boolean",
+                          "description": "Whether this user may create pads."
+                        },
+                        "analytics_id": {
+                          "type": "string",
+                          "description": "A stable, anonymous identifier of the user."
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "status": "OK",
+                  "name": null,
+                  "allow_pad_creation": true,
+                  "analytics_id": "anonymous-user-1"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
       }
     }
   },
@@ -5333,7 +5723,84 @@
           },
           "question_id": {
             "type": "string"
+          },
+          "private": {
+            "type": "string",
+            "description": "Whether the waiting room is enabled, so that guests must be admitted before joining the pad.",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "execution_enabled": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "description": "Whether code execution is enabled. Must be sent as the string `\"true\"` or `\"false\"`."
+          },
+          "restrict_interviewer_access": {
+            "type": "string",
+            "description": "Only let the owner and `allowed_interviewer_emails` join the pad as interviewers.",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "allowed_interviewer_emails": {
+            "type": "array",
+            "description": "Users of the pad's organization allowed on the pad when `restrict_interviewer_access` is enabled. Replaces the current list.",
+            "items": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Makes this user of your organization the pad owner. A new account is created if the email address belongs to one of your organization's domains and has no account yet. Organization owners only.\n"
+          },
+          "disable_coaching_tips": {
+            "type": "string",
+            "description": "Turn off interviewer coaching tips in the pad.",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "team_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The team the pad belongs to."
+          },
+          "take_home": {
+            "type": "string",
+            "description": "Create a take-home pad, for questions usable in both live and take-home pads.",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "take_home_time_limit": {
+            "type": "string",
+            "description": "Take-home time limit, in minutes. Defaults to the question's time limit.",
+            "pattern": "^[0-9]+$"
+          },
+          "ai_assist_enabled": {
+            "type": "string",
+            "description": "Enable AI Assist in the pad. Defaults to your organization's setting.",
+            "enum": [
+              "true",
+              "false"
+            ]
           }
+        },
+        "not": {
+          "required": [
+            "contents",
+            "question_id"
+          ]
         }
       },
       "PadUpdateForm": {
@@ -5365,6 +5832,65 @@
               "true",
               "false"
             ]
+          },
+          "private": {
+            "type": "string",
+            "description": "Whether the waiting room is enabled, so that guests must be admitted before joining the pad.",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "execution_enabled": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "description": "Whether code execution is enabled. Must be sent as the string `\"true\"` or `\"false\"`."
+          },
+          "restrict_interviewer_access": {
+            "type": "string",
+            "description": "Only let the owner and `allowed_interviewer_emails` join the pad as interviewers.",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "allowed_interviewer_emails": {
+            "type": "array",
+            "description": "Users of the pad's organization allowed on the pad when `restrict_interviewer_access` is enabled. Replaces the current list.",
+            "items": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Makes this user of your organization the pad owner. A new account is created if the email address belongs to one of your organization's domains and has no account yet. Organization owners only.\n"
+          },
+          "disable_coaching_tips": {
+            "type": "string",
+            "description": "Turn off interviewer coaching tips in the pad.",
+            "enum": [
+              "true",
+              "false"
+            ]
+          }
+        },
+        "not": {
+          "required": [
+            "ended",
+            "deleted"
+          ],
+          "properties": {
+            "ended": {
+              "const": "true"
+            },
+            "deleted": {
+              "const": "true"
+            }
           }
         }
       },
@@ -5392,15 +5918,389 @@
           },
           "question[candidate_instructions]": {
             "type": "string",
-            "contentMediaType": "application/json"
+            "contentMediaType": "application/json",
+            "contentSchema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CandidateInstruction"
+              }
+            }
           },
           "question[file_contents]": {
             "type": "string",
-            "contentMediaType": "application/json"
+            "contentMediaType": "application/json",
+            "contentSchema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/FileContent"
+              }
+            }
           },
           "question[zip_file]": {
             "type": "string",
             "format": "binary"
+          },
+          "question[shared]": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          },
+          "question[custom_database_id]": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+          }
+        }
+      },
+      "CandidateInstruction": {
+        "type": "object",
+        "properties": {
+          "instructions": {
+            "type": "string",
+            "description": "The instructions, in Markdown."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of this step, for multi-step instructions."
+          },
+          "default_visible": {
+            "type": "boolean",
+            "description": "Whether the candidate sees this step when the pad opens. The first step is always visible."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "instructions"
+        ]
+      },
+      "QuestionWriteRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "description": "A language key or a project template slug."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the question, only shown to interviewers."
+          },
+          "candidate_instructions": {
+            "type": "string",
+            "description": "Instructions shown to the candidate, as a **JSON-encoded** array of objects with `instructions` (required, Markdown), `name` and `default_visible`.\n",
+            "example": "[{\"instructions\": \"Return the indices of the two numbers that add up to the target.\"}]",
+            "contentMediaType": "application/json",
+            "contentSchema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CandidateInstruction"
+              }
+            }
+          },
+          "contents": {
+            "type": "string",
+            "description": "Starter code, for single-file languages. Cannot be combined with `file_contents`."
+          },
+          "file_contents": {
+            "type": "string",
+            "description": "Starter files, for project templates, as a JSON-encoded array of objects with `path`, `contents`, and optionally `hidden: true` to hide a file from the candidate. On creation, `deleted: true` drops a template file (`.cpad` cannot be deleted). On update, `deleted` entries are ignored.\n",
+            "example": "[{\"path\": \"src/App.jsx\", \"contents\": \"export default function App() {}\"}]",
+            "contentMediaType": "application/json",
+            "contentSchema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/FileContent"
+              }
+            }
+          },
+          "solution": {
+            "type": "string",
+            "description": "Reference solution, only shown to interviewers."
+          },
+          "shared": {
+            "type": "boolean",
+            "description": "Share the question with your organization. Only the question author can change it."
+          },
+          "custom_database_id": {
+            "type": "integer",
+            "description": "A custom database to attach to the question."
+          },
+          "ai_assist_custom_system_prompt": {
+            "type": "string",
+            "description": "Custom AI Assist system prompt. Enterprise plans only."
+          }
+        },
+        "additionalProperties": false
+      },
+      "PadWriteFields": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "description": "A single-file language key.",
+            "example": "python3"
+          },
+          "contents": {
+            "type": "string",
+            "description": "The code to put in the pad."
+          },
+          "private": {
+            "type": "boolean",
+            "description": "Whether the waiting room is enabled, so that guests must be admitted before joining the pad."
+          },
+          "execution_enabled": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "description": "Whether code execution is enabled. Must be sent as the string `\"true\"` or `\"false\"`."
+          },
+          "restrict_interviewer_access": {
+            "type": "boolean",
+            "description": "Only let the owner and `allowed_interviewer_emails` join the pad as interviewers."
+          },
+          "allowed_interviewer_emails": {
+            "type": "array",
+            "description": "Users of the pad's organization allowed on the pad when `restrict_interviewer_access` is enabled. Replaces the current list.",
+            "items": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Makes this user of your organization the pad owner. A new account is created if the email address belongs to one of your organization's domains and has no account yet. Organization owners only.\n"
+          },
+          "disable_coaching_tips": {
+            "type": "boolean",
+            "description": "Turn off interviewer coaching tips in the pad."
+          }
+        },
+        "additionalProperties": false
+      },
+      "PadCreateRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "description": "A single-file language key.",
+            "example": "python3"
+          },
+          "contents": {
+            "type": "string",
+            "description": "The code to put in the pad."
+          },
+          "private": {
+            "type": "boolean",
+            "description": "Whether the waiting room is enabled, so that guests must be admitted before joining the pad."
+          },
+          "execution_enabled": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "description": "Whether code execution is enabled. Must be sent as the string `\"true\"` or `\"false\"`."
+          },
+          "restrict_interviewer_access": {
+            "type": "boolean",
+            "description": "Only let the owner and `allowed_interviewer_emails` join the pad as interviewers."
+          },
+          "allowed_interviewer_emails": {
+            "type": "array",
+            "description": "Users of the pad's organization allowed on the pad when `restrict_interviewer_access` is enabled. Replaces the current list.",
+            "items": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Makes this user of your organization the pad owner. A new account is created if the email address belongs to one of your organization's domains and has no account yet. Organization owners only.\n"
+          },
+          "disable_coaching_tips": {
+            "type": "boolean",
+            "description": "Turn off interviewer coaching tips in the pad."
+          },
+          "question_id": {
+            "type": "integer",
+            "description": "A question from your question bank to start the pad with. Cannot be combined with `contents`."
+          },
+          "notes": {
+            "type": "string",
+            "description": "Private interviewer notes."
+          },
+          "team_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The team the pad belongs to."
+          },
+          "take_home": {
+            "type": "boolean",
+            "description": "Create a take-home pad, for questions usable in both live and take-home pads."
+          },
+          "take_home_time_limit": {
+            "type": "integer",
+            "description": "Take-home time limit, in minutes. Defaults to the question's time limit."
+          },
+          "ai_assist_enabled": {
+            "type": "boolean",
+            "description": "Enable AI Assist in the pad. Defaults to your organization's setting."
+          }
+        },
+        "additionalProperties": false,
+        "not": {
+          "required": [
+            "contents",
+            "question_id"
+          ]
+        }
+      },
+      "PadUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "description": "A single-file language key.",
+            "example": "python3"
+          },
+          "contents": {
+            "type": "string",
+            "description": "The code to put in the pad."
+          },
+          "private": {
+            "type": "boolean",
+            "description": "Whether the waiting room is enabled, so that guests must be admitted before joining the pad."
+          },
+          "execution_enabled": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "description": "Whether code execution is enabled. Must be sent as the string `\"true\"` or `\"false\"`."
+          },
+          "restrict_interviewer_access": {
+            "type": "boolean",
+            "description": "Only let the owner and `allowed_interviewer_emails` join the pad as interviewers."
+          },
+          "allowed_interviewer_emails": {
+            "type": "array",
+            "description": "Users of the pad's organization allowed on the pad when `restrict_interviewer_access` is enabled. Replaces the current list.",
+            "items": {
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Makes this user of your organization the pad owner. A new account is created if the email address belongs to one of your organization's domains and has no account yet. Organization owners only.\n"
+          },
+          "disable_coaching_tips": {
+            "type": "boolean",
+            "description": "Turn off interviewer coaching tips in the pad."
+          },
+          "ended": {
+            "type": "boolean",
+            "description": "Set to `true` to end the pad."
+          },
+          "deleted": {
+            "type": "boolean",
+            "description": "Set to `true` to delete the pad."
+          }
+        },
+        "additionalProperties": false,
+        "not": {
+          "required": [
+            "ended",
+            "deleted"
+          ],
+          "properties": {
+            "ended": {
+              "const": true
+            },
+            "deleted": {
+              "const": true
+            }
+          }
+        }
+      },
+      "FileContent": {
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "contents": {
+            "type": "string"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuestionPadType": {
+        "type": "string",
+        "description": "The type of pads a question can be used in.",
+        "enum": [
+          "any",
+          "live",
+          "take_home"
+        ]
+      },
+      "Ok": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "OK"
+            ]
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "status",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ERROR"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable description of the error."
           }
         }
       }
