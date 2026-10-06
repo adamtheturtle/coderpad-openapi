@@ -1,0 +1,4677 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CoderPad Screen API community contract",
+    "version": "1.1.0",
+    "description": "Community-maintained Screen v1.1 contract. Authenticate requests using the API-Key header. Additive response fields can appear without a version change; consumers should preserve unknown JSON where appropriate.",
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://screen.coderpad.io/assessment/api",
+      "description": "CoderPad Screen US"
+    },
+    {
+      "url": "https://www.codingame.eu/assessment/api",
+      "description": "CoderPad Screen EU"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/v1.1/campaigns": {
+      "get": {
+        "tags": [
+          "Campaigns"
+        ],
+        "summary": "Get all test campaigns",
+        "operationId": "campaigns",
+        "responses": {
+          "200": {
+            "description": "Return an array of test campaigns",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CampaignsResult"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Campaigns"
+        ],
+        "summary": "Create a test campaign",
+        "description": "Creates a test the same way the Screen interface does: a setting left out falls back to the default of the team the test belongs to, and a setting the account cannot use is rejected rather than silently dropped.",
+        "operationId": "createCampaign",
+        "requestBody": {
+          "description": "the test campaign to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCampaignRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "the id of the created test campaign",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedCampaign"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "a requested feature is not available on this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/campaigns/{campaign_id}/actions/send": {
+      "post": {
+        "tags": [
+          "Campaigns"
+        ],
+        "summary": "Send an invitation",
+        "operationId": "send",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "description": "id of test campaign used for the test session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "candidate parameters for which the test is sent",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendParameters"
+              },
+              "examples": {
+                "manual": {
+                  "value": {
+                    "send_invitation_email": false
+                  }
+                },
+                "rejectDuplicates": {
+                  "value": {
+                    "candidate_email": "ada@example.com",
+                    "allow_duplicate_invitations": false
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/me": {
+      "get": {
+        "tags": [
+          "Me"
+        ],
+        "summary": "Get information about the owner of the token",
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "Return the information about token's owner",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/me"
+                },
+                "example": {
+                  "organization_id": "0558b3e3-b76c-42ea-9435-8da1adb7e232",
+                  "recruiter_id": "d959afcb-11b7-4cb4-bd99-0ce50f060e5a",
+                  "teams": []
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/questions": {
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Get all questions",
+        "operationId": "questions",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "description": "index of the first question to pick (min: 0)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32",
+                  "default": 0
+                }
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "maximum number of questions to fetch (min: 1, max: 50)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32",
+                  "default": 50
+                }
+              }
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "filter by question type",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "duration_seconds_min",
+            "in": "query",
+            "description": "filter by minimum duration in seconds (inclusive)",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "duration_seconds_max",
+            "in": "query",
+            "description": "filter by maximum duration in seconds (inclusive)",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "difficulty",
+            "in": "query",
+            "description": "filter by difficulty level: EASY, MEDIUM or HARD",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "domain",
+            "in": "query",
+            "description": "filter by domain name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "skill",
+            "in": "query",
+            "description": "filter by skill",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "programming_language",
+            "in": "query",
+            "description": "filter by programming language label",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from_coderpad_question_bank",
+            "in": "query",
+            "description": "filter by whether the question is from the CoderPad question bank",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "product",
+            "in": "query",
+            "description": "filter by product: SCREEN or QUALIFY",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "sort field: id, title, type, duration_seconds, difficulty, domain, skill, programming_language, modification_time, from_coderpad_question_bank, product",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "default": "id"
+                }
+              }
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "sort order: asc or desc",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "default": "asc"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return a page of questions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/questions_page"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Create a question",
+        "description": "Returns the created question, the same way GET /v1.1/questions/{id} publishes it, with a Location header pointing at that endpoint. An unsupported type, an unknown domain or a team the caller cannot reach is a 400",
+        "operationId": "createQuestion",
+        "requestBody": {
+          "description": "question to create",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveQuestionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Return the created question",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionDetailsResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "the question is rejected by a business rule",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/questions/{id}": {
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Get question details",
+        "operationId": "question",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the question to be fetched",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the question details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionDetailsResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "question not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Update a question",
+        "operationId": "updateQuestion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the question id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "new content of the question",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveQuestionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Return the updated question",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionDetailsResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "question not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "the question is rejected by a business rule",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/questions/{id}/insights": {
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Get question insights",
+        "operationId": "questionInsights",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the question to be fetched",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "programming_language",
+            "in": "query",
+            "description": "programming language used to compute language-specific insights",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the question insights",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionInsightsResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "question not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/temporary-file": {
+      "post": {
+        "tags": [
+          "TemporaryFile"
+        ],
+        "summary": "Upload a file",
+        "description": "Stores a file and returns the id to reference it with in a later call. The file is the raw request body and must not exceed 52428800 bytes (50 MB). Its 'Content-Length' header is optional, but when it is set it must be the exact byte size of the body: a length smaller than the body stores a truncated file. Uploading requires the same permission as saving a question, which is the only call an upload can be referenced by. An upload no later call has referenced is eventually deleted, so it should be referenced promptly.",
+        "operationId": "upload",
+        "requestBody": {
+          "description": "the file to store",
+          "content": {
+            "application/gzip": {
+              "schema": {
+                "type": "string",
+                "format": "binary",
+                "x-max-bytes": 52428800
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Return the stored upload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemporaryFileResult"
+                },
+                "example": {
+                  "id": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/tests/{id}/questions/{questionId}/ai-assist-conversations": {
+      "get": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Get the AI assist conversations of a PROJECT question",
+        "description": "Returns the conversations the candidate had with the AI assistant while answering the question, once the test is completed or waiting for a manual review.",
+        "operationId": "aiAssistConversations",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the test session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "questionId",
+            "in": "path",
+            "description": "global id of the PROJECT question, as published in questions[].id by GET /tests/{id}",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "return the AI assist conversations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ai_assist_conversations"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "no PROJECT question found for this id in this test",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "the test is not completed yet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/tests/{id}/actions/cancel": {
+      "post": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Cancel an invitation",
+        "operationId": "cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the test session to be canceled",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "success"
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/tests/{id}/questions/{questionId}/project": {
+      "get": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Download the candidate project of a PROJECT question",
+        "description": "Returns the question project archive with the candidate changes applied. The archive is built on demand, so expect a slow response.",
+        "operationId": "candidateProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the test session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "questionId",
+            "in": "path",
+            "description": "global id of the PROJECT question, as published in questions[].id by GET /tests/{id}",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "return the project as a tar.gz archive",
+            "content": {
+              "application/gzip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "no project found for this question in this test",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/tests/{id}": {
+      "get": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Get test session status",
+        "operationId": "testStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the test session to be fetched",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "withCommunityStats",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the test status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/detailed_result"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Delete a test session",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the test session to be deleted",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "success"
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/tests/{id}/report": {
+      "get": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Export a test report",
+        "operationId": "report",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the test session",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "report_type",
+            "in": "query",
+            "description": "Type of report to export. A full report includes the candidates' answers to each test question.",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "default": "full",
+                  "enum": [
+                    "full",
+                    "simplified"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "anonymous",
+            "in": "query",
+            "description": "if the report should be anonymous or not",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          },
+          {
+            "name": "include_rank",
+            "in": "query",
+            "description": "if the rank should be included or not",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
+            }
+          },
+          {
+            "name": "include_comparative_score",
+            "in": "query",
+            "description": "if the comparative score should be included or not",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "return the pdf report",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/tests/{id}/actions/resend": {
+      "post": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Resend an invitation",
+        "operationId": "resend",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the test to be resent",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "success"
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/tests": {
+      "get": {
+        "tags": [
+          "Tests"
+        ],
+        "summary": "Get all test sessions status",
+        "operationId": "testsStatus",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "description": "fetch the test sessions sent after this date (timestamp in ms)",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "fetch the test sessions sent before this date (timestamp in ms)",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "description": "index of the first test session to pick (min: 0)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32",
+                  "default": 0
+                }
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "maximum number of test sessions to fetch (min: 1, max: 50)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32",
+                  "default": 50
+                }
+              }
+            }
+          },
+          {
+            "name": "candidateEmail",
+            "in": "query",
+            "description": "fetch the test sessions for a specific candidate email",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "campaignId",
+            "in": "query",
+            "description": "fetch the test sessions for a specific campaign id",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "product",
+            "in": "query",
+            "description": "fetch the test sessions belonging a specific product",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "return the test sessions status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/result_page"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1.1/webhook": {
+      "get": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Get Webhook",
+        "operationId": "getWebhook",
+        "responses": {
+          "204": {
+            "description": "success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/webhook"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Create Webhook",
+        "description": "You can create a webhook or contact us to do so.\n\nOnly one webhook can be configured at a time. A new subscription will replace the existing one.\n\nEvery time an event is triggered on the platform, this webhook is updated with the event type and any necessary details.\n\nHere are the events currently sent to this webhook:\n\n - \"test_status_changed\": when a test status changes (completed, canceled, ?)",
+        "operationId": "subscribe",
+        "requestBody": {
+          "description": "the url to send the data to",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "success"
+          },
+          "400": {
+            "description": "bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "invalid url",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        },
+        "callbacks": {
+          "test_status_changed": {
+            "{$request.body#/url}": {
+              "post": {
+                "summary": "On test status change",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/WebhookTestStatusChangedDto"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "204": {
+                    "description": "success"
+                  },
+                  "500": {
+                    "description": "internal error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Delete Webhook",
+        "operationId": "unsubscribe",
+        "responses": {
+          "204": {
+            "description": "success"
+          },
+          "401": {
+            "description": "Invalid API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CampaignsResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "the campaign id",
+            "format": "int32",
+            "example": 121
+          },
+          "name": {
+            "type": "string",
+            "description": "the campaign name",
+            "example": "Java Junior campaign"
+          },
+          "languages": {
+            "type": "array",
+            "description": "the languages allowed for the campaign",
+            "example": "['en']",
+            "items": {
+              "type": "string",
+              "description": "the languages allowed for the campaign",
+              "example": "['en']"
+            }
+          },
+          "pinned": {
+            "type": "boolean",
+            "description": "true is the campaign is pinned, false otherwise",
+            "example": true
+          },
+          "archived": {
+            "type": "boolean",
+            "description": "true is the campaign is archived, false otherwise",
+            "example": false
+          }
+        }
+      },
+      "CreatedCampaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "the test id, the one the other /v1.1 endpoints take",
+            "format": "int32",
+            "example": 121
+          }
+        },
+        "description": "the created test"
+      },
+      "WorkApiExceptionSerialized": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "CreateCampaignRequest": {
+        "required": [
+          "name",
+          "questions"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "the test name, between 3 and 64 characters",
+            "example": "Backend Engineer"
+          },
+          "questions": {
+            "minItems": 1,
+            "type": "array",
+            "description": "the test entries, in the order candidates take them",
+            "items": {
+              "$ref": "#/components/schemas/campaign_question"
+            }
+          },
+          "settings": {
+            "$ref": "#/components/schemas/campaign_settings"
+          },
+          "team_id": {
+            "type": "string",
+            "description": "the team the test belongs to, one of the teams GET /v1.1/me returns. Defaults to the default team of the token owner",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          }
+        },
+        "description": "the test to create"
+      },
+      "campaign_access_period": {
+        "type": "object",
+        "properties": {
+          "min_start_time": {
+            "type": "string",
+            "description": "ISO 8601 instant before which candidates cannot start the test",
+            "example": "2026-09-17T08:00:00Z"
+          },
+          "max_end_time": {
+            "type": "string",
+            "description": "ISO 8601 instant after which candidates cannot take the test anymore, after min_start_time. Only a GLOBAL or UNLIMITED timer accepts one: each question of a PER_QUESTION timed test starts its own timer",
+            "example": "2026-10-17T08:00:00Z"
+          }
+        },
+        "description": "when candidates are allowed to take the test"
+      },
+      "campaign_follow_up_questions": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "whether follow-up questions are asked, which only a PER_QUESTION timer allows",
+            "example": true
+          },
+          "answer_format": {
+            "type": "string",
+            "description": "how candidates answer the follow-up questions",
+            "example": "TEXT",
+            "enum": [
+              "TEXT",
+              "VIDEO",
+              "AUDIO"
+            ]
+          }
+        },
+        "description": "asking candidates to justify their answers after a coding exercise"
+      },
+      "campaign_question": {
+        "required": [
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "whether the entry is a single question or a set drawn at random",
+            "example": "QUESTION",
+            "enum": [
+              "QUESTION",
+              "RANDOM_QUESTION_SET"
+            ]
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/random_question_set_configuration"
+          },
+          "question_id": {
+            "type": "string",
+            "description": "the question to add, required on a QUESTION entry",
+            "format": "uuid",
+            "example": "12221d67-75bd-49ff-83ca-620267e79ed8"
+          }
+        },
+        "description": "one entry of the test, in the order candidates take them"
+      },
+      "campaign_settings": {
+        "type": "object",
+        "properties": {
+          "languages": {
+            "type": "array",
+            "description": "the locales the test is available in, among the locales enabled on the account",
+            "example": [
+              "en",
+              "fr"
+            ],
+            "items": {
+              "type": "string",
+              "description": "the locales the test is available in, among the locales enabled on the account",
+              "example": "[\"en\",\"fr\"]"
+            }
+          },
+          "timer": {
+            "$ref": "#/components/schemas/campaign_timer"
+          },
+          "invitation_expiration_days": {
+            "type": "integer",
+            "description": "how many days a candidate has to start the test after being invited",
+            "format": "int32",
+            "example": 14
+          },
+          "access_period": {
+            "$ref": "#/components/schemas/campaign_access_period"
+          },
+          "send_candidate_simplified_report": {
+            "type": "boolean",
+            "description": "whether candidates receive a simplified report once they submit the test",
+            "example": true
+          },
+          "copy_paste_blocked": {
+            "type": "boolean",
+            "description": "whether candidates are prevented from copying and pasting",
+            "example": true
+          },
+          "follow_up_questions": {
+            "$ref": "#/components/schemas/campaign_follow_up_questions"
+          },
+          "webcam_proctoring": {
+            "$ref": "#/components/schemas/campaign_webcam_proctoring"
+          },
+          "full_screen_required": {
+            "type": "boolean",
+            "description": "whether candidates must keep the test in full screen",
+            "example": true
+          },
+          "ai_assist_enabled": {
+            "type": "boolean",
+            "description": "whether candidates have access to the AI assistant in project questions",
+            "example": false
+          },
+          "enabled_coding_agents": {
+            "type": "string",
+            "description": "the coding agents candidates may run, none when empty",
+            "example": "[\"CLAUDE_CODE\"]",
+            "enum": [
+              "CLAUDE_CODE",
+              "CODEX"
+            ]
+          }
+        },
+        "description": "how the test behaves, defaulting to the settings of the team it belongs to"
+      },
+      "campaign_timer": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "how the test times the candidate",
+            "example": "GLOBAL",
+            "enum": [
+              "PER_QUESTION",
+              "GLOBAL",
+              "UNLIMITED"
+            ]
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "description": "how long the whole test lasts, required in GLOBAL mode and rejected in the other two",
+            "format": "int32",
+            "example": 60
+          }
+        },
+        "description": "how the test times the candidate"
+      },
+      "campaign_webcam_proctoring": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "whether candidates are recorded through their webcam",
+            "example": true
+          },
+          "ai_analysis_enabled": {
+            "type": "boolean",
+            "description": "whether the webcam snapshots are analyzed by AI",
+            "example": true
+          }
+        },
+        "description": "recording candidates via their webcam while they take the test"
+      },
+      "random_question_set_configuration": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "description": "the domain the questions are drawn from, among the domains the account holds questions in",
+            "example": "backend"
+          },
+          "skills": {
+            "type": "array",
+            "description": "the skills the questions must cover, among the skills the questions of the domain carry",
+            "example": [
+              "Algorithms"
+            ],
+            "items": {
+              "type": "string",
+              "description": "the skills the questions must cover, among the skills the questions of the domain carry",
+              "example": "[\"Algorithms\"]"
+            }
+          },
+          "question_type": {
+            "type": "string",
+            "description": "the kind of question drawn",
+            "example": "QUIZ",
+            "enum": [
+              "QUIZ",
+              "CODE"
+            ]
+          },
+          "target_duration_minutes": {
+            "type": "integer",
+            "description": "how long the drawn questions should last altogether, the draw approaches it without matching it exactly. 5, 10, 15, 20, 25 or 30 for a QUIZ set, 5, 10, 20, 30, 45 or 60 for a CODE one",
+            "format": "int32",
+            "example": 30
+          },
+          "target_experience_level": {
+            "type": "string",
+            "description": "the experience level the questions target, SENIOR when left out",
+            "example": "SENIOR",
+            "enum": [
+              "JUNIOR",
+              "SENIOR",
+              "EXPERT"
+            ]
+          },
+          "included_question_ids": {
+            "type": "array",
+            "description": "the only questions the set may draw, which also means questions added later are never drawn. Each of them must be a question of the kind the set draws. Mutually exclusive with excluded_question_ids",
+            "example": [
+              "3b7d5e41-90c2-4a18-8f6b-1d0e2c4a7b93"
+            ],
+            "items": {
+              "type": "string",
+              "description": "the only questions the set may draw, which also means questions added later are never drawn. Each of them must be a question of the kind the set draws. Mutually exclusive with excluded_question_ids",
+              "format": "uuid"
+            }
+          },
+          "excluded_question_ids": {
+            "type": "array",
+            "description": "the questions the set must never draw, which also means questions added later are drawn. Each of them must be a question of the kind the set draws. Mutually exclusive with included_question_ids",
+            "example": [
+              "9c1f0b2e-4a77-4d51-b0aa-7e2d9f3c8a10"
+            ],
+            "items": {
+              "type": "string",
+              "description": "the questions the set must never draw, which also means questions added later are drawn. Each of them must be a question of the kind the set draws. Mutually exclusive with included_question_ids",
+              "format": "uuid"
+            }
+          }
+        },
+        "description": "which questions a random set may draw"
+      },
+      "CampaignResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "the test id",
+            "format": "int32",
+            "example": 42
+          },
+          "test_url": {
+            "type": "string",
+            "description": "the test url"
+          }
+        }
+      },
+      "SendParameters": {
+        "type": "object",
+        "properties": {
+          "candidate_email": {
+            "type": "string",
+            "description": "email of the candidate, if not provided nothing will be sent to the candidate",
+            "example": "andy.sydnie@example.com"
+          },
+          "candidate_name": {
+            "type": "string",
+            "description": "name of the candidate",
+            "example": "Andy Sydnie"
+          },
+          "recruiter_email": {
+            "type": "string",
+            "description": "email of the recruiter who will receive the test result",
+            "example": "rh@mycompany.com"
+          },
+          "tags": {
+            "type": "string",
+            "description": "tags for this test separated by comma",
+            "example": "java, senior"
+          },
+          "send_invitation_email": {
+            "type": "boolean",
+            "description": "whether send an invitation email to the candidate or not, must not be true if 'candidate_email' is null. 'send_invitation_email' is true by default when 'candidate_email' is provided and false otherwise",
+            "example": true
+          },
+          "send_notification_email_on_bounce": {
+            "type": "boolean",
+            "description": "whether to send an email to the recruiter when the candidate's invitation bounces (for example, when the candidate's email is rejected by the server) or not",
+            "example": true,
+            "default": false
+          },
+          "allow_duplicate_invitations": {
+            "type": "boolean",
+            "default": true,
+            "description": "Allow repeated invitations for the same candidate. Omission uses the server default (true); send false to reject duplicates."
+          }
+        },
+        "if": {
+          "required": [
+            "send_invitation_email"
+          ],
+          "properties": {
+            "send_invitation_email": {
+              "const": true
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "candidate_email"
+          ],
+          "properties": {
+            "candidate_email": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      },
+      "me": {
+        "type": "object",
+        "properties": {
+          "teams": {
+            "type": "array",
+            "description": "the teams the account is a member of",
+            "items": {
+              "$ref": "#/components/schemas/me_team"
+            }
+          },
+          "organization_id": {
+            "type": "string",
+            "description": "the organization id",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "recruiter_id": {
+            "type": "string",
+            "description": "the recruiter id",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          }
+        },
+        "description": "description of the account that own the token"
+      },
+      "me_team": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "the team id",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "name": {
+            "type": "string",
+            "description": "the team name",
+            "example": "Engineering"
+          },
+          "is_default": {
+            "type": "boolean",
+            "description": "whether the team is the default one of the token owner",
+            "example": true
+          }
+        },
+        "description": "a team the account is a member of"
+      },
+      "ChoiceSelectionDetails": {
+        "type": "object",
+        "properties": {
+          "correct_choice_indexes": {
+            "type": "array",
+            "description": "0-based indexes of the correct choices in mcq_details.choices",
+            "example": [
+              0,
+              2
+            ],
+            "items": {
+              "type": "integer",
+              "description": "0-based indexes of the correct choices in mcq_details.choices",
+              "format": "int32"
+            }
+          }
+        },
+        "description": "Choices the candidate has to select"
+      },
+      "CodeDetails": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "$ref": "#/components/schemas/EnvironmentDetails"
+          },
+          "mode": {
+            "type": "string",
+            "description": "SINGLE_LANGUAGE when the question is bound to programming_language, MULTI_LANGUAGE when the candidate picks one of available_programming_language_ids",
+            "example": "SINGLE_LANGUAGE",
+            "enum": [
+              "SINGLE_LANGUAGE",
+              "MULTI_LANGUAGE"
+            ]
+          },
+          "programming_language_id": {
+            "type": "string",
+            "description": "the programming language id; only set when mode is SINGLE_LANGUAGE",
+            "example": "Python3"
+          },
+          "candidate_test_code": {
+            "type": "string",
+            "description": "code the candidate can run against their answer; language-specific questions only"
+          },
+          "validator_code": {
+            "type": "string",
+            "description": "code defining the tests referenced by evaluation.validation_code.test_cases; language-specific questions only"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "description": "execution timeout in milliseconds when it overrides the default of the language",
+            "format": "int32",
+            "example": 8000
+          },
+          "database_engine": {
+            "$ref": "#/components/schemas/DatabaseEngineDetails"
+          },
+          "database_setup_script": {
+            "type": "string",
+            "description": "script creating and filling the tables the query runs against; SQL questions only"
+          },
+          "starter_code": {
+            "type": "string",
+            "description": "starter code; only set when mode is SINGLE_LANGUAGE"
+          },
+          "function_signature": {
+            "$ref": "#/components/schemas/FunctionSignatureDetails"
+          },
+          "possible_solution": {
+            "$ref": "#/components/schemas/PossibleSolutionDetails"
+          },
+          "show_function_signature_in_statement": {
+            "type": "boolean",
+            "description": "whether the function signature is shown to the candidate in the statement",
+            "example": true
+          },
+          "available_programming_language_ids": {
+            "type": "array",
+            "description": "ids of the programming languages the candidate can choose from; only set when mode is MULTI_LANGUAGE",
+            "example": [
+              "C++",
+              "Java",
+              "Python3"
+            ],
+            "items": {
+              "type": "string",
+              "description": "ids of the programming languages the candidate can choose from; only set when mode is MULTI_LANGUAGE",
+              "example": "[\"C++\",\"Java\",\"Python3\"]"
+            }
+          }
+        },
+        "description": "CODE-specific question details"
+      },
+      "DatabaseEngineDetails": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "the database engine version, absent for h2 which has a single version",
+            "example": "16.4.0"
+          },
+          "engine_id": {
+            "type": "string",
+            "description": "the database engine id, or \"h2\" for the default engine",
+            "example": "postgresql"
+          }
+        },
+        "description": "The single database engine a SQL question runs on, H2 when the question declares none. Saving a question without this block means H2 on an update too, so an update meant to keep another engine has to name it"
+      },
+      "EnvironmentDetails": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "the environment version",
+            "example": "3.11.5"
+          },
+          "environment_id": {
+            "type": "string",
+            "description": "the environment id",
+            "example": "python"
+          }
+        },
+        "description": "Execution environment version a question runs on"
+      },
+      "EvaluationAcceptedAnswerDetails": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "the accepted answer, as an exact value or a regular expression",
+            "example": "42"
+          },
+          "match_type": {
+            "type": "string",
+            "description": "how the candidate answer is compared to the value",
+            "example": "EXACT",
+            "enum": [
+              "EXACT",
+              "REGEX"
+            ]
+          }
+        },
+        "description": "One answer accepted as correct"
+      },
+      "EvaluationDetails": {
+        "type": "object",
+        "properties": {
+          "rubric": {
+            "$ref": "#/components/schemas/RubricDetails"
+          },
+          "test_report": {
+            "$ref": "#/components/schemas/TestReportDetails"
+          },
+          "validation_code": {
+            "$ref": "#/components/schemas/ValidationCodeDetails"
+          },
+          "input_output": {
+            "$ref": "#/components/schemas/InputOutputDetails"
+          },
+          "sql_query_result_comparison": {
+            "$ref": "#/components/schemas/SqlQueryResultComparisonDetails"
+          },
+          "text_answer_matching": {
+            "$ref": "#/components/schemas/TextAnswerMatchingDetails"
+          },
+          "choice_selection": {
+            "$ref": "#/components/schemas/ChoiceSelectionDetails"
+          }
+        },
+        "description": "How the candidate answer is evaluated"
+      },
+      "FileUploadDetails": {
+        "type": "object",
+        "properties": {
+          "download_url": {
+            "type": "string",
+            "description": "signed download URL of the statement file"
+          }
+        },
+        "description": "FILE_UPLOAD-specific question details"
+      },
+      "FunctionSignatureDetails": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "the function name",
+            "example": "compute"
+          },
+          "parameters": {
+            "type": "array",
+            "description": "the parameters, in order, each a JSON Schema draft-6 object whose 'title' is the parameter name",
+            "example": [
+              {
+                "title": "numbers",
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            ],
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "return_type": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "the return type, as a JSON Schema draft-6 object",
+            "example": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "description": "Signature of the function the candidate has to implement"
+      },
+      "GameDetails": {
+        "type": "object",
+        "properties": {
+          "available_programming_language_ids": {
+            "type": "array",
+            "description": "ids of the programming languages the candidate can choose from",
+            "example": [
+              "C++",
+              "Java",
+              "Python3"
+            ],
+            "items": {
+              "type": "string",
+              "description": "ids of the programming languages the candidate can choose from",
+              "example": "[\"C++\",\"Java\",\"Python3\"]"
+            }
+          }
+        },
+        "description": "GAME-specific question details"
+      },
+      "InputOutputDetails": {
+        "type": "object",
+        "properties": {
+          "test_cases": {
+            "type": "array",
+            "description": "test cases in the order the editor shows them",
+            "items": {
+              "$ref": "#/components/schemas/InputOutputTestCaseDetails"
+            }
+          }
+        },
+        "description": "Input and output pairs the candidate code is run on"
+      },
+      "InputOutputTestCaseDetails": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "test case label, by locale",
+              "example": "{\"en\":\"Example\",\"fr\":\"Exemple\"}"
+            },
+            "description": "test case label, by locale",
+            "example": {
+              "en": "Example",
+              "fr": "Exemple"
+            }
+          },
+          "input": {
+            "type": "string",
+            "description": "input given to the candidate code"
+          },
+          "output": {
+            "type": "string",
+            "description": "output expected from the candidate code"
+          },
+          "skill": {
+            "type": "string",
+            "description": "skill assessed by this test case",
+            "example": "Problem solving"
+          },
+          "points": {
+            "type": "integer",
+            "description": "points awarded by this test case",
+            "format": "int32",
+            "example": 85
+          },
+          "weight": {
+            "type": "integer",
+            "description": "relative weight of this test case",
+            "format": "int32",
+            "example": 2
+          },
+          "difficulty": {
+            "type": "integer",
+            "description": "difficulty of this test case",
+            "format": "int32",
+            "example": 200
+          },
+          "contributes_to_score": {
+            "type": "boolean",
+            "description": "whether the test case takes part in the score",
+            "example": false
+          },
+          "visible_to_candidate": {
+            "type": "boolean",
+            "description": "whether the candidate sees the test case",
+            "example": true
+          },
+          "timeout_ms_by_programming_language_id": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "description": "execution timeout in milliseconds, by programming language id, when it overrides the default of that language",
+              "format": "int32"
+            },
+            "description": "execution timeout in milliseconds, by programming language id, when it overrides the default of that language",
+            "example": {
+              "Python3": 5000
+            }
+          }
+        },
+        "description": "Test case feeding an input to the candidate code and comparing its output"
+      },
+      "McqDetails": {
+        "type": "object",
+        "properties": {
+          "choices": {
+            "type": "array",
+            "description": "MCQ choices",
+            "items": {
+              "$ref": "#/components/schemas/QuestionChoiceDetailsResult"
+            }
+          },
+          "selection_mode": {
+            "type": "string",
+            "description": "whether the candidate can select one or multiple choices: SINGLE or MULTIPLE",
+            "example": "SINGLE",
+            "enum": [
+              "SINGLE",
+              "MULTIPLE"
+            ]
+          },
+          "randomize_choices": {
+            "type": "boolean",
+            "description": "whether MCQ choices are randomized",
+            "example": true
+          }
+        },
+        "description": "MCQ-specific question details"
+      },
+      "PossibleSolutionDetails": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "the solution source code"
+          },
+          "programming_language_id": {
+            "type": "string",
+            "description": "the programming language the solution is written in",
+            "example": "Python3"
+          }
+        },
+        "description": "A working solution of the question, kept for the author"
+      },
+      "ProjectDetails": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "$ref": "#/components/schemas/EnvironmentDetails"
+          },
+          "resources": {
+            "type": "array",
+            "description": "additional resources the project runs with; empty if none",
+            "items": {
+              "$ref": "#/components/schemas/ProjectResourceDetails"
+            }
+          },
+          "ai_assist_additional_instructions": {
+            "type": "string",
+            "description": "instructions given to the AI assist during the test"
+          },
+          "ai_assist_allowed": {
+            "type": "boolean",
+            "description": "whether AI assist is allowed",
+            "example": false
+          },
+          "download_url": {
+            "type": "string",
+            "description": "signed tar.gz download URL"
+          }
+        },
+        "description": "PROJECT-specific question details"
+      },
+      "ProjectResourceDetails": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "the resource version",
+            "example": "16.4.0"
+          },
+          "resource_id": {
+            "type": "string",
+            "description": "the resource id",
+            "example": "postgresql"
+          }
+        },
+        "description": "Additional resource a PROJECT runs with, such as a database"
+      },
+      "QueryComparisonRulesDetails": {
+        "type": "object",
+        "properties": {
+          "row_order_matters": {
+            "type": "boolean",
+            "description": "whether rows must come in the expected order",
+            "example": true
+          },
+          "column_order_matters": {
+            "type": "boolean",
+            "description": "whether columns must come in the expected order",
+            "example": true
+          },
+          "compare_all_tables": {
+            "type": "boolean",
+            "description": "whether every table of the database is compared, not only the query result",
+            "example": false
+          }
+        },
+        "description": "Rules applied when comparing the candidate query result to the expected one"
+      },
+      "QuestionChoiceDetailsResult": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "choice label, by locale",
+              "example": "{\"en\":\"Option A\"}"
+            },
+            "description": "choice label, by locale",
+            "example": {
+              "en": "Option A"
+            }
+          }
+        },
+        "description": "MCQ choice offered to the candidate"
+      },
+      "QuestionDetailsResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "the question id",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "version": {
+            "type": "integer",
+            "description": "the question version",
+            "format": "int32",
+            "example": 1
+          },
+          "type": {
+            "type": "string",
+            "description": "the question type",
+            "example": "CODE",
+            "enum": [
+              "MCQ",
+              "CODE",
+              "TEXT",
+              "MULTI",
+              "GAME",
+              "CLASH",
+              "COURSE",
+              "FILE_UPLOAD",
+              "PROJECT",
+              "VIDEO"
+            ]
+          },
+          "domain": {
+            "type": "string",
+            "description": "the question domain name",
+            "example": "Algorithms"
+          },
+          "difficulty": {
+            "type": "string",
+            "description": "difficulty level",
+            "example": "MEDIUM",
+            "enum": [
+              "EASY",
+              "MEDIUM",
+              "HARD"
+            ]
+          },
+          "points": {
+            "type": "integer",
+            "description": "maximum score weight for the question",
+            "format": "int32",
+            "example": 100
+          },
+          "title": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "question title, by locale",
+              "example": "{\"en\":\"FizzBuzz\",\"fr\":\"FizzBuzz\"}"
+            },
+            "description": "question title, by locale",
+            "example": {
+              "en": "FizzBuzz",
+              "fr": "FizzBuzz"
+            }
+          },
+          "statement": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "HTML statement, by locale"
+            },
+            "description": "HTML statement, by locale"
+          },
+          "locales": {
+            "type": "array",
+            "description": "locales available for this question",
+            "example": [
+              "en",
+              "fr"
+            ],
+            "items": {
+              "type": "string",
+              "description": "locales available for this question",
+              "example": "[\"en\",\"fr\"]"
+            }
+          },
+          "skill": {
+            "type": "string",
+            "description": "the question skill",
+            "example": "Arrays"
+          },
+          "resources": {
+            "type": "array",
+            "description": "external attachments; empty if none",
+            "items": {
+              "$ref": "#/components/schemas/QuestionResourceDetails"
+            }
+          },
+          "comment": {
+            "type": "string",
+            "description": "internal comment on the question"
+          },
+          "evaluation": {
+            "$ref": "#/components/schemas/EvaluationDetails"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "description": "the question duration in seconds",
+            "format": "int32",
+            "example": 1200
+          },
+          "creation_time": {
+            "type": "string",
+            "description": "creation time of the first version of the question, in UTC",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "modification_time": {
+            "type": "string",
+            "description": "modification time in UTC",
+            "example": "2024-02-01T08:00:00.000Z"
+          },
+          "from_coderpad_question_bank": {
+            "type": "boolean",
+            "description": "true if the question comes from the CoderPad question bank",
+            "example": false
+          },
+          "team_id": {
+            "type": "string",
+            "description": "the id of the team owning the question; see GET /me for the teams of the token owner",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "automatically_selectable": {
+            "type": "boolean",
+            "description": "whether the question can be automatically selected in campaigns",
+            "example": true
+          },
+          "mcq_details": {
+            "$ref": "#/components/schemas/McqDetails"
+          },
+          "code_details": {
+            "$ref": "#/components/schemas/CodeDetails"
+          },
+          "game_details": {
+            "$ref": "#/components/schemas/GameDetails"
+          },
+          "text_details": {
+            "$ref": "#/components/schemas/TextDetails"
+          },
+          "file_upload_details": {
+            "$ref": "#/components/schemas/FileUploadDetails"
+          },
+          "video_details": {
+            "$ref": "#/components/schemas/VideoDetails"
+          },
+          "project_details": {
+            "$ref": "#/components/schemas/ProjectDetails"
+          }
+        },
+        "description": "Details of a question"
+      },
+      "QuestionResourceDetails": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string",
+            "description": "resource filename",
+            "example": "diagram.png"
+          },
+          "mime_type": {
+            "type": "string",
+            "description": "resource MIME type",
+            "example": "image/png"
+          },
+          "download_url": {
+            "type": "string",
+            "description": "signed download URL"
+          }
+        },
+        "description": "External attachment on a question"
+      },
+      "RubricCriterionDetails": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "criterion label, by locale",
+              "example": "{\"en\":\"Communication\"}"
+            },
+            "description": "criterion label, by locale",
+            "example": {
+              "en": "Communication"
+            }
+          },
+          "skill": {
+            "type": "string",
+            "description": "skill assessed by this criterion",
+            "example": "Problem solving"
+          },
+          "points": {
+            "type": "integer",
+            "description": "points awarded by this criterion",
+            "format": "int32",
+            "example": 100
+          },
+          "weight": {
+            "type": "integer",
+            "description": "relative weight of this criterion",
+            "format": "int32",
+            "example": 1
+          },
+          "review_mode": {
+            "type": "string",
+            "description": "how this criterion is reviewed",
+            "example": "HUMAN_ONLY",
+            "enum": [
+              "HUMAN_ONLY",
+              "AI_SUGGESTIONS",
+              "AI_GRADING"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "reviewer-facing description of the criterion"
+          }
+        },
+        "description": "One criterion the candidate answer is reviewed against"
+      },
+      "RubricDetails": {
+        "type": "object",
+        "properties": {
+          "criteria": {
+            "type": "array",
+            "description": "criteria of the rubric, in the order the editor shows them",
+            "items": {
+              "$ref": "#/components/schemas/RubricCriterionDetails"
+            }
+          }
+        },
+        "description": "Rubric the candidate answer is reviewed against"
+      },
+      "SqlQueryResultComparisonDetails": {
+        "type": "object",
+        "properties": {
+          "reference_query": {
+            "type": "string",
+            "description": "query producing the expected result",
+            "example": "SELECT * FROM users WHERE role = 'admin' AND status = 'active';"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/QueryComparisonRulesDetails"
+          }
+        },
+        "description": "Reference query the candidate query result is compared to"
+      },
+      "TestReportDetails": {
+        "type": "object",
+        "properties": {
+          "test_cases": {
+            "type": "array",
+            "description": "tests of the report, in the order the editor shows them",
+            "items": {
+              "$ref": "#/components/schemas/TestReportTestCaseDetails"
+            }
+          }
+        },
+        "description": "Test suite report the candidate project is scored on"
+      },
+      "TestReportTestCaseDetails": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "stable identifier of the test case",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "test_identifier": {
+            "type": "string",
+            "description": "identifier of the test in the report",
+            "example": "Counter test in src/components/Counter.test.js"
+          },
+          "label": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "test label, by locale",
+              "example": "{\"en\":\"Counter increases correctly\"}"
+            },
+            "description": "test label, by locale",
+            "example": {
+              "en": "Counter increases correctly"
+            }
+          },
+          "skill": {
+            "type": "string",
+            "description": "skill assessed by this test",
+            "example": "Problem solving"
+          },
+          "points": {
+            "type": "integer",
+            "description": "points awarded by this test",
+            "format": "int32",
+            "example": 70
+          },
+          "weight": {
+            "type": "integer",
+            "description": "relative weight of this test",
+            "format": "int32",
+            "example": 1
+          }
+        },
+        "description": "Test of the project test suite the answer is scored on"
+      },
+      "TextAnswerMatchingDetails": {
+        "type": "object",
+        "properties": {
+          "accepted_answers": {
+            "type": "array",
+            "description": "answers accepted as correct; matching any of them is enough",
+            "items": {
+              "$ref": "#/components/schemas/EvaluationAcceptedAnswerDetails"
+            }
+          }
+        },
+        "description": "Answers the candidate text is matched against"
+      },
+      "TextDetails": {
+        "type": "object",
+        "properties": {
+          "evaluation_mode": {
+            "type": "string",
+            "description": "how the question is graded: AUTOMATIC uses a text_answer_matching evaluation, MANUAL a rubric one",
+            "example": "AUTOMATIC",
+            "enum": [
+              "MANUAL",
+              "AUTOMATIC"
+            ]
+          }
+        },
+        "description": "TEXT-specific question details"
+      },
+      "ValidationCodeDetails": {
+        "type": "object",
+        "properties": {
+          "test_cases": {
+            "type": "array",
+            "description": "test cases in the order the editor shows them",
+            "items": {
+              "$ref": "#/components/schemas/ValidationCodeTestCaseDetails"
+            }
+          }
+        },
+        "description": "Validation methods the candidate code is run against"
+      },
+      "ValidationCodeTestCaseDetails": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "test case label, by locale",
+              "example": "{\"en\":\"One element inside the map\"}"
+            },
+            "description": "test case label, by locale",
+            "example": {
+              "en": "One element inside the map"
+            }
+          },
+          "test_identifier": {
+            "type": "string",
+            "description": "validation method running the test",
+            "example": "validate1"
+          },
+          "skill": {
+            "type": "string",
+            "description": "skill assessed by this test case",
+            "example": "Problem solving"
+          },
+          "points": {
+            "type": "integer",
+            "description": "points awarded by this test case",
+            "format": "int32",
+            "example": 85
+          },
+          "weight": {
+            "type": "integer",
+            "description": "relative weight of this test case",
+            "format": "int32",
+            "example": 2
+          },
+          "difficulty": {
+            "type": "integer",
+            "description": "difficulty of this test case",
+            "format": "int32",
+            "example": 200
+          },
+          "contributes_to_score": {
+            "type": "boolean",
+            "description": "whether the test case takes part in the score",
+            "example": true
+          },
+          "visible_to_candidate": {
+            "type": "boolean",
+            "description": "whether the candidate sees the test case",
+            "example": false
+          }
+        },
+        "description": "Test case running a validation method against the candidate code"
+      },
+      "VideoDetails": {
+        "type": "object",
+        "properties": {
+          "recording_media": {
+            "type": "string",
+            "description": "the recording media",
+            "example": "VIDEO",
+            "enum": [
+              "VIDEO",
+              "AUDIO"
+            ]
+          }
+        },
+        "description": "VIDEO-specific question details"
+      },
+      "SaveCodeDetails": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "$ref": "#/components/schemas/EnvironmentDetails"
+          },
+          "mode": {
+            "type": "string",
+            "description": "SINGLE_LANGUAGE when the question is bound to programming_language, MULTI_LANGUAGE when the candidate picks one of available_programming_language_ids",
+            "example": "SINGLE_LANGUAGE",
+            "enum": [
+              "SINGLE_LANGUAGE",
+              "MULTI_LANGUAGE"
+            ]
+          },
+          "programming_language_id": {
+            "type": "string",
+            "description": "the programming language id; only set when mode is SINGLE_LANGUAGE",
+            "example": "Python3"
+          },
+          "candidate_test_code": {
+            "type": "string",
+            "description": "code the candidate can run against their answer; language-specific questions only"
+          },
+          "validator_code": {
+            "type": "string",
+            "description": "code defining the tests referenced by evaluation.validation_code.test_cases; language-specific questions only"
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "description": "execution timeout in milliseconds when it overrides the default of the language",
+            "format": "int32",
+            "example": 8000
+          },
+          "database_engine": {
+            "$ref": "#/components/schemas/DatabaseEngineDetails"
+          },
+          "database_setup_script": {
+            "type": "string",
+            "description": "script creating and filling the tables the query runs against; SQL questions only"
+          },
+          "starter_code": {
+            "type": "string",
+            "description": "starter code; only set when mode is SINGLE_LANGUAGE"
+          },
+          "function_signature": {
+            "$ref": "#/components/schemas/FunctionSignatureDetails"
+          },
+          "possible_solution": {
+            "$ref": "#/components/schemas/PossibleSolutionDetails"
+          },
+          "show_function_signature_in_statement": {
+            "type": "boolean",
+            "description": "whether the function signature is shown to the candidate in the statement",
+            "example": true
+          }
+        },
+        "description": "CODE-specific question data to create or update"
+      },
+      "SaveProjectDetails": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "$ref": "#/components/schemas/EnvironmentDetails"
+          },
+          "resources": {
+            "type": "array",
+            "description": "additional resources the project runs with; empty if none",
+            "items": {
+              "$ref": "#/components/schemas/ProjectResourceDetails"
+            }
+          },
+          "ai_assist_additional_instructions": {
+            "type": "string",
+            "description": "instructions given to the AI assist during the test"
+          },
+          "ai_assist_allowed": {
+            "type": "boolean",
+            "description": "whether AI assist is allowed",
+            "example": false
+          },
+          "temporary_file_id": {
+            "type": "string",
+            "description": "id returned by POST /v1.1/temporary-file for the tar.gz source archive of the project. Accepted on creation only, where it is mandatory: the source archive of an existing question is replaced in the question editor",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          }
+        },
+        "description": "PROJECT-specific question data to create or update"
+      },
+      "SaveQuestionRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "the question type",
+            "example": "MCQ",
+            "enum": [
+              "MCQ",
+              "CODE",
+              "TEXT",
+              "FILE_UPLOAD",
+              "VIDEO",
+              "PROJECT"
+            ]
+          },
+          "domain": {
+            "type": "string",
+            "description": "the question domain name",
+            "example": "Algorithms"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "description": "the question duration in seconds",
+            "format": "int32",
+            "example": 1200
+          },
+          "difficulty": {
+            "type": "string",
+            "description": "difficulty level",
+            "example": "MEDIUM",
+            "enum": [
+              "EASY",
+              "MEDIUM",
+              "HARD"
+            ]
+          },
+          "points": {
+            "type": "integer",
+            "description": "maximum score weight for the question",
+            "format": "int32",
+            "example": 100
+          },
+          "title": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "question title, by locale",
+              "example": "{\"en\":\"FizzBuzz\",\"fr\":\"FizzBuzz\"}"
+            },
+            "description": "question title, by locale",
+            "example": {
+              "en": "FizzBuzz",
+              "fr": "FizzBuzz"
+            }
+          },
+          "statement": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "HTML statement, by locale"
+            },
+            "description": "HTML statement, by locale"
+          },
+          "locales": {
+            "type": "array",
+            "description": "locales of the question. Defaults to the locales of 'title'. Every localized field must cover exactly these locales",
+            "example": [
+              "en",
+              "fr"
+            ],
+            "items": {
+              "type": "string",
+              "description": "locales of the question. Defaults to the locales of 'title'. Every localized field must cover exactly these locales",
+              "example": "[\"en\",\"fr\"]"
+            }
+          },
+          "skill": {
+            "type": "string",
+            "description": "the question skill",
+            "example": "Arrays"
+          },
+          "team_id": {
+            "type": "string",
+            "description": "id of the team owning the question. Defaults to the preferred team of the caller",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "automatically_selectable": {
+            "type": "boolean",
+            "description": "whether the question can be automatically selected in campaigns; omitted, it defaults to true, like every other creation path, so an update omitting it does not unselect the question",
+            "example": true
+          },
+          "comment": {
+            "type": "string",
+            "description": "internal comment on the question"
+          },
+          "evaluation": {
+            "$ref": "#/components/schemas/EvaluationDetails"
+          },
+          "code_details": {
+            "$ref": "#/components/schemas/SaveCodeDetails"
+          },
+          "mcq_details": {
+            "$ref": "#/components/schemas/McqDetails"
+          },
+          "text_details": {
+            "$ref": "#/components/schemas/TextDetails"
+          },
+          "video_details": {
+            "$ref": "#/components/schemas/VideoDetails"
+          },
+          "project_details": {
+            "$ref": "#/components/schemas/SaveProjectDetails"
+          }
+        },
+        "description": "Question data to create or update. Same structure as QuestionDetailsResult without the server-owned fields. An unknown property is rejected, so a fetched question cannot be sent back as is: its read-only fields must be stripped first. Top level: 'id', 'version', 'creation_time', 'modification_time', 'from_coderpad_question_bank', 'resources', 'game_details' and 'file_upload_details'. Nested: 'code_details.available_programming_language_ids' and 'project_details.download_url'. 'evaluation.test_report' is read-only too, but it is declared here, so it is refused as a block the question type does not support rather than as an unknown property"
+      },
+      "QuestionInsightsResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "the question id",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/QuestionUsageInsights"
+          },
+          "frequent_answers": {
+            "type": "array",
+            "description": "most frequent MCQ answers",
+            "items": {
+              "$ref": "#/components/schemas/QuestionRepartitionInsights"
+            }
+          },
+          "testcases_success": {
+            "type": "array",
+            "description": "success rate by test case",
+            "items": {
+              "$ref": "#/components/schemas/QuestionRepartitionInsights"
+            }
+          },
+          "scores_distribution": {
+            "$ref": "#/components/schemas/QuestionScoresDistributionInsights"
+          }
+        },
+        "description": "Insight statistics for a question (same data as the Insights tab)"
+      },
+      "QuestionRepartitionInsights": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "display label",
+            "example": "Option A"
+          },
+          "count": {
+            "type": "integer",
+            "description": "absolute count",
+            "format": "int32",
+            "example": 10
+          },
+          "percentage": {
+            "type": "number",
+            "description": "ratio between 0 and 1",
+            "format": "double",
+            "example": 0.5
+          },
+          "correct": {
+            "type": "boolean",
+            "description": "whether this choice is correct (MCQ answers only)",
+            "example": true
+          }
+        },
+        "description": "Labeled count/percentage repartition entry"
+      },
+      "QuestionScoreRangeInsights": {
+        "type": "object",
+        "properties": {
+          "score_range": {
+            "type": "string",
+            "description": "ZERO_SCORE for candidates scoring no point, FULL_SCORE for candidates scoring every point, PARTIAL_SCORE for everyone in between",
+            "example": "PARTIAL_SCORE",
+            "enum": [
+              "ZERO_SCORE",
+              "PARTIAL_SCORE",
+              "FULL_SCORE"
+            ]
+          },
+          "candidate_count": {
+            "type": "integer",
+            "description": "number of candidates in this bucket",
+            "format": "int32",
+            "example": 30
+          }
+        },
+        "description": "Candidate count for a score range"
+      },
+      "QuestionScoresDistributionInsights": {
+        "type": "object",
+        "properties": {
+          "distribution": {
+            "type": "array",
+            "description": "score buckets (0%, partial, 100%)",
+            "items": {
+              "$ref": "#/components/schemas/QuestionScoreRangeInsights"
+            }
+          },
+          "total_candidates": {
+            "type": "integer",
+            "description": "total number of candidates included in the distribution",
+            "format": "int32",
+            "example": 100
+          }
+        },
+        "description": "Distribution of candidate scores for a question"
+      },
+      "QuestionUsageInsights": {
+        "type": "object",
+        "properties": {
+          "view_count": {
+            "type": "integer",
+            "description": "number of candidates who attempted the question",
+            "format": "int32",
+            "example": 42
+          },
+          "last_view_time": {
+            "type": "string",
+            "description": "time of the last attempt, in UTC",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "average_answer_duration_seconds": {
+            "type": "integer",
+            "description": "average answer duration in seconds",
+            "format": "int32",
+            "example": 120
+          },
+          "timeout_rate": {
+            "type": "number",
+            "description": "ratio of candidates who timed out (between 0 and 1)",
+            "format": "double",
+            "example": 0.05
+          },
+          "average_score": {
+            "type": "number",
+            "description": "average score ratio between 0 and 1",
+            "format": "double",
+            "example": 0.75
+          }
+        },
+        "description": "Usage statistics for a question"
+      },
+      "QuestionsResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "the question id",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "version": {
+            "type": "integer",
+            "description": "the question version",
+            "format": "int32",
+            "example": 1
+          },
+          "title": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "the question title, by locale",
+              "example": "{\"en\":\"FizzBuzz\",\"fr\":\"FizzBuzz\"}"
+            },
+            "description": "the question title, by locale",
+            "example": {
+              "en": "FizzBuzz",
+              "fr": "FizzBuzz"
+            }
+          },
+          "type": {
+            "type": "string",
+            "description": "the question type",
+            "example": "CODE",
+            "enum": [
+              "MCQ",
+              "CODE",
+              "TEXT",
+              "MULTI",
+              "GAME",
+              "CLASH",
+              "COURSE",
+              "FILE_UPLOAD",
+              "PROJECT",
+              "VIDEO"
+            ]
+          },
+          "difficulty": {
+            "type": "string",
+            "description": "difficulty level",
+            "example": "MEDIUM",
+            "enum": [
+              "EASY",
+              "MEDIUM",
+              "HARD"
+            ]
+          },
+          "domain": {
+            "type": "string",
+            "description": "the question domain name",
+            "example": "Algorithms"
+          },
+          "skill": {
+            "type": "string",
+            "description": "the question skill",
+            "example": "Arrays"
+          },
+          "product": {
+            "type": "string",
+            "description": "the product the question belongs to",
+            "example": "SCREEN",
+            "enum": [
+              "SCREEN",
+              "QUALIFY"
+            ]
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "description": "the question duration in seconds",
+            "format": "int32",
+            "example": 1200
+          },
+          "programming_language_id": {
+            "type": "string",
+            "description": "the programming language id; absent when the question is not tied to a single language",
+            "example": "Python3"
+          },
+          "modification_time": {
+            "type": "string",
+            "description": "last modification time of the question, in UTC",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "from_coderpad_question_bank": {
+            "type": "boolean",
+            "description": "true if the question comes from the CoderPad question bank",
+            "example": false
+          }
+        },
+        "description": "Summary of a question"
+      },
+      "pagination_config": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "integer",
+            "description": "the first element to pick",
+            "format": "int32",
+            "example": 42
+          },
+          "limit": {
+            "type": "integer",
+            "description": "the maximum number of elements returned",
+            "format": "int32",
+            "example": 50
+          },
+          "total": {
+            "type": "integer",
+            "description": "the total number of available elements",
+            "format": "int32",
+            "example": 100
+          },
+          "has_more_items": {
+            "type": "boolean",
+            "description": "true if there are still some elements to be fetched",
+            "example": true
+          },
+          "next_start": {
+            "type": "integer",
+            "description": "if has_more_items is true, point to the first element of the next page",
+            "format": "int32",
+            "example": 92
+          }
+        },
+        "description": "the pagination config"
+      },
+      "questions_page": {
+        "type": "object",
+        "properties": {
+          "questions": {
+            "type": "array",
+            "description": "the questions of the current page",
+            "items": {
+              "$ref": "#/components/schemas/QuestionsResult"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/pagination_config"
+          }
+        },
+        "description": "Paginated list of questions"
+      },
+      "TemporaryFileResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "the upload id to reference in the call consuming the file",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          }
+        },
+        "description": "A file stored until it is referenced by another call"
+      },
+      "ArrayNode": {
+        "description": "An evolving JSON item emitted by AI Assist."
+      },
+      "ai_assist_conversation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "conversation id",
+            "format": "uuid",
+            "example": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+          },
+          "subject": {
+            "type": "string",
+            "description": "subject of the conversation"
+          },
+          "creation_time": {
+            "type": "string",
+            "description": "creation date of the conversation (ISO 8601, UTC)",
+            "example": "2026-09-29T14:03:12.345Z"
+          },
+          "messages": {
+            "type": "array",
+            "description": "the messages of the conversation, oldest first",
+            "items": {
+              "$ref": "#/components/schemas/ai_assist_message"
+            }
+          }
+        },
+        "description": "a conversation between the candidate and the AI assistant"
+      },
+      "ai_assist_conversations": {
+        "type": "object",
+        "properties": {
+          "conversations": {
+            "type": "array",
+            "description": "the conversations, oldest first. Empty when the candidate did not use the AI assistant",
+            "items": {
+              "$ref": "#/components/schemas/ai_assist_conversation"
+            }
+          }
+        },
+        "description": "the conversations the candidate had with the AI assistant on a PROJECT question"
+      },
+      "ai_assist_message": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "message id",
+            "format": "uuid",
+            "example": "0f8fad5b-d9cb-469f-a165-70867728950e"
+          },
+          "role": {
+            "type": "string",
+            "description": "USER for a message of the candidate, ASSISTANT for an answer of the AI",
+            "enum": [
+              "USER",
+              "ASSISTANT"
+            ]
+          },
+          "creation_time": {
+            "type": "string",
+            "description": "creation date of the message (ISO 8601, UTC)",
+            "example": "2026-09-29T14:03:12.345Z"
+          },
+          "output_items": {
+            "type": "array",
+            "description": "the parts of the message, in the format the AI assistant stores them, which may evolve. Each item has an id, a type, a status and its startedAt / finishedAt times in milliseconds. A message item carries its text chunks in content, a reasoning item the summary of the AI reasoning, and a function_call, web_search or code_execution item what the AI asked for (name and arguments, or queries), never its result.",
+            "items": {
+              "$ref": "#/components/schemas/ArrayNode"
+            }
+          }
+        },
+        "description": "a message of an AI assist conversation"
+      },
+      "accepted_answer": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "the accepted answer, as an exact value or a regular expression",
+            "example": "42"
+          },
+          "match_type": {
+            "type": "string",
+            "description": "how the candidate answer is compared with this accepted answer: EXACT is a case insensitive, trimmed equality, REGEX a full match of the whole answer. Same values as the question API publishes",
+            "example": "EXACT",
+            "enum": [
+              "EXACT",
+              "REGEX"
+            ]
+          }
+        },
+        "description": "an answer the question accepts as correct, the candidate answer is matched against each of them"
+      },
+      "ai_review": {
+        "type": "object",
+        "properties": {
+          "rationale": {
+            "type": "string",
+            "description": "the message explaining the AI recommendation"
+          },
+          "recommended_outcome": {
+            "type": "string",
+            "description": "the verdict the AI recommends on this criterion, stated the same way as outcome so a caller never has to translate one into the other. Only ever PASSED or FAILED: the AI reaching no recommendation is reported by omitting this field, see no_recommendation_reason",
+            "example": "PASSED",
+            "enum": [
+              "PASSED",
+              "FAILED"
+            ]
+          },
+          "no_recommendation_reason": {
+            "type": "string",
+            "description": "why the AI produced no recommendation for this criterion. Omitted when it did. This never describes the candidate's result, only the AI review",
+            "example": "CONFIDENCE_SCORE_TOO_LOW",
+            "enum": [
+              "CONFIDENCE_SCORE_TOO_LOW",
+              "EMPTY_SUBMISSION",
+              "TRANSCRIPT_NOT_AVAILABLE",
+              "AI_REVIEW_FAILED"
+            ]
+          }
+        },
+        "description": "AI assisted review of a rubric criterion"
+      },
+      "answer": {
+        "type": "object",
+        "properties": {
+          "code_answer": {
+            "$ref": "#/components/schemas/code_answer"
+          },
+          "game_answer": {
+            "$ref": "#/components/schemas/game_answer"
+          },
+          "mcq_answer": {
+            "$ref": "#/components/schemas/mcq_answer"
+          },
+          "text_answer": {
+            "$ref": "#/components/schemas/text_answer"
+          },
+          "file_upload_answer": {
+            "$ref": "#/components/schemas/file_upload_answer"
+          },
+          "project_answer": {
+            "$ref": "#/components/schemas/project_answer"
+          },
+          "video_answer": {
+            "$ref": "#/components/schemas/video_answer"
+          }
+        },
+        "description": "the answer of the candidate, in the {type}_answer sub-block of the question type"
+      },
+      "choice": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "the choice label, in the language the candidate took the test in",
+            "example": "It runs in linear time"
+          }
+        },
+        "description": "a single choice of an MCQ question"
+      },
+      "choice_selection": {
+        "type": "object",
+        "properties": {
+          "correct_choice_indexes": {
+            "type": "array",
+            "description": "zero based positions of the correct choices in mcq_details.choices, to compare with answer.mcq_answer.selected_choice_indexes. Same positions as the correct_choice_indexes of GET /v1.1/questions/{id}",
+            "example": [
+              0,
+              2
+            ],
+            "items": {
+              "type": "integer",
+              "description": "zero based positions of the correct choices in mcq_details.choices, to compare with answer.mcq_answer.selected_choice_indexes. Same positions as the correct_choice_indexes of GET /v1.1/questions/{id}",
+              "format": "int32"
+            }
+          }
+        },
+        "description": "the choices the candidate had to select"
+      },
+      "code_answer": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "the code of the candidate's last submission"
+          },
+          "programming_language_id": {
+            "type": "string",
+            "description": "id of the programming language chosen by the candidate. Omitted on a question available in a single language, since the question imposes it",
+            "example": "Python3"
+          }
+        },
+        "description": "what the candidate submitted on a CODE question"
+      },
+      "detailed_result": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "the test status",
+            "example": "completed",
+            "enum": [
+              "aborted",
+              "canceled",
+              "completed",
+              "expired",
+              "in progress",
+              "waiting",
+              "need review"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "url to the test report through the dashboard application",
+            "example": "https://www.codingame.com/work/dashboard/campaign/69/candidates/?selected=42"
+          },
+          "report": {
+            "$ref": "#/components/schemas/report"
+          },
+          "id": {
+            "type": "integer",
+            "description": "the test id",
+            "format": "int32",
+            "example": 42
+          },
+          "id_test": {
+            "type": "integer",
+            "description": "the test id (deprecated, see id)",
+            "format": "int32",
+            "example": 42
+          },
+          "organization_id": {
+            "type": "string",
+            "description": "the organization id",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "campaign_id": {
+            "type": "integer",
+            "description": "the campaign id",
+            "format": "int32",
+            "example": 42
+          },
+          "candidate_name": {
+            "type": "string",
+            "description": "the name of the candidate",
+            "example": "Jean Dupont"
+          },
+          "candidate_email": {
+            "type": "string",
+            "description": "the email of the candidate",
+            "example": "jean.dupont@codingame.com"
+          },
+          "tags": {
+            "type": "array",
+            "description": "the tags of the candidate",
+            "items": {
+              "type": "string",
+              "description": "the tags of the candidate"
+            }
+          },
+          "send_time": {
+            "type": "integer",
+            "description": "timestamp (in milliseconds) when the test has been sent",
+            "format": "int64"
+          },
+          "start_time": {
+            "type": "integer",
+            "description": "timestamp (in milliseconds) when the test has been started",
+            "format": "int64"
+          },
+          "end_time": {
+            "type": "integer",
+            "description": "timestamp (in milliseconds) when the test has been ended",
+            "format": "int64"
+          },
+          "test_url": {
+            "type": "string",
+            "description": "the url to the test"
+          },
+          "candidate_language": {
+            "type": "string",
+            "description": "the language chosen by the candidate to take the test if they started the test, null otherwise"
+          },
+          "last_activity_time": {
+            "type": "integer",
+            "description": "time (in milliseconds) of the candidate's last activity (last submit or code test)",
+            "format": "int64",
+            "example": 1685545371216
+          },
+          "approval_status": {
+            "type": "string",
+            "description": "approval status of the candidate (PASSED, REJECTED, TO_REVIEW)",
+            "example": "PASSED"
+          },
+          "timer_type": {
+            "type": "string",
+            "description": "how the test times the candidate. PER_QUESTION is the only mode where a question has a limit of its own, so it is the only one where a question carries a time_limit_seconds: a GLOBAL test times the whole session and an UNLIMITED one times nothing. Omitted on a test the candidate never started",
+            "example": "PER_QUESTION",
+            "enum": [
+              "PER_QUESTION",
+              "GLOBAL",
+              "UNLIMITED"
+            ]
+          },
+          "questions": {
+            "type": "array",
+            "description": "the questions of the test with their detailed report data. Omitted when the caller is not allowed to access detailed reports",
+            "items": {
+              "$ref": "#/components/schemas/test_question"
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "type": "object",
+        "properties": {
+          "rubric": {
+            "$ref": "#/components/schemas/rubric"
+          },
+          "test_report": {
+            "$ref": "#/components/schemas/test_report"
+          },
+          "validation_code": {
+            "$ref": "#/components/schemas/validation_code"
+          },
+          "input_output": {
+            "$ref": "#/components/schemas/input_output"
+          },
+          "sql_query_result_comparison": {
+            "$ref": "#/components/schemas/sql_query_result_comparison"
+          },
+          "text_answer_matching": {
+            "$ref": "#/components/schemas/text_answer_matching"
+          },
+          "choice_selection": {
+            "$ref": "#/components/schemas/choice_selection"
+          }
+        },
+        "description": "how the candidate answer was graded, and the result of each grading criterion"
+      },
+      "file_upload_answer": {
+        "type": "object",
+        "properties": {
+          "filename": {
+            "type": "string",
+            "description": "name of the file uploaded by the candidate",
+            "example": "architecture.pdf"
+          },
+          "download_url": {
+            "type": "string",
+            "description": "signed download url of the file uploaded by the candidate. This url is temporary and expires, do not store it"
+          },
+          "candidate_comment": {
+            "type": "string",
+            "description": "comment left by the candidate along with the file"
+          }
+        },
+        "description": "what the candidate uploaded on a FILE_UPLOAD question"
+      },
+      "game_answer": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "the code of the candidate's last submission"
+          },
+          "programming_language_id": {
+            "type": "string",
+            "description": "id of the programming language chosen by the candidate. Omitted on a question available in a single language, since the question imposes it",
+            "example": "Python3"
+          }
+        },
+        "description": "what the candidate submitted on a GAME question"
+      },
+      "input_output": {
+        "type": "object",
+        "properties": {
+          "test_cases": {
+            "type": "array",
+            "description": "test cases of the question, each with its result. A question nesting its validators returns the whole tree flattened, a parent before its own children, so the max_points of the list add up to the question max_points",
+            "items": {
+              "$ref": "#/components/schemas/input_output_test_case"
+            }
+          }
+        },
+        "description": "result of the test cases comparing the output of the candidate code with the expected one"
+      },
+      "input_output_test_case": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "the test case label",
+            "example": "Two disjoint intervals"
+          },
+          "skill": {
+            "type": "string",
+            "description": "skill assessed by this test case",
+            "example": "Complexity"
+          },
+          "outcome": {
+            "type": "string",
+            "description": "verdict of the test case. NOT_RUN when it was never run, typically because the candidate never submitted or a previous test case timed out: an unrun test case is undecided, never failed. PENDING_MANUAL_REVIEW never applies here, only a rubric criterion waits for a human",
+            "example": "PASSED",
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "NOT_RUN",
+              "PENDING_MANUAL_REVIEW"
+            ]
+          },
+          "max_points": {
+            "type": "integer",
+            "description": "points the test case is worth, the points of the question API",
+            "format": "int32",
+            "example": 20
+          },
+          "awarded_points": {
+            "type": "integer",
+            "description": "points the candidate obtained on this test case, null while it has not been decided",
+            "format": "int32",
+            "example": 20
+          },
+          "result_message": {
+            "type": "string",
+            "description": "explains the result of this test case: the test runner output, or the reason it was not run. Free text meant to be displayed, not parsed"
+          },
+          "result_overridden_by_recruiter": {
+            "type": "boolean",
+            "description": "whether a recruiter set this result by hand instead of leaving it to the automatic grading. A CoderPad admin or a write-access shared report can do it too, never CoderPad itself. outcome and awarded_points already reflect it, so a caller never applies it itself",
+            "example": false
+          },
+          "timed_out": {
+            "type": "boolean",
+            "description": "whether the test case timed out",
+            "example": false
+          }
+        },
+        "description": "result of one test case comparing the output of the candidate code with the expected one"
+      },
+      "mcq_answer": {
+        "type": "object",
+        "properties": {
+          "selected_choice_indexes": {
+            "type": "array",
+            "description": "zero based positions of the choices the candidate picked, in mcq_details.choices",
+            "example": [
+              0
+            ],
+            "items": {
+              "type": "integer",
+              "description": "zero based positions of the choices the candidate picked, in mcq_details.choices",
+              "format": "int32"
+            }
+          }
+        },
+        "description": "what the candidate picked on an MCQ question"
+      },
+      "mcq_details": {
+        "type": "object",
+        "properties": {
+          "choices": {
+            "type": "array",
+            "description": "every choice of the question, listed in the question's own order. A choice is pointed at by its position in this list, the way GET /v1.1/questions/{id} does, by correct_choice_indexes and by answer.mcq_answer.selected_choice_indexes",
+            "items": {
+              "$ref": "#/components/schemas/choice"
+            }
+          },
+          "selection_mode": {
+            "type": "string",
+            "description": "whether the candidate can select one or multiple choices: SINGLE or MULTIPLE",
+            "example": "SINGLE",
+            "enum": [
+              "SINGLE",
+              "MULTIPLE"
+            ]
+          },
+          "randomize_choices": {
+            "type": "boolean",
+            "description": "whether MCQ choices are randomized",
+            "example": true
+          }
+        },
+        "description": "MCQ specific configuration of the question"
+      },
+      "project_answer": {
+        "type": "object",
+        "properties": {
+          "download_url": {
+            "type": "string",
+            "description": "url of the endpoint building the candidate project archive (question project with the candidate changes applied). It requires the API-Key header and generates the archive on demand, so expect a slow response. Only returned when the candidate submitted the project at least once."
+          },
+          "ai_assist_conversation_count": {
+            "type": "integer",
+            "description": "number of conversations the candidate had with the AI assistant on this question. Fetch them from GET /tests/{id}/questions/{questionId}/ai-assist-conversations.",
+            "format": "int32",
+            "example": 2
+          }
+        },
+        "description": "what the candidate submitted on a PROJECT question"
+      },
+      "recording": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "the recording id",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "url": {
+            "type": "string",
+            "description": "signed url of the recording. This url is temporary and expires, do not store it. Only returned when video_details.recording_availability is AVAILABLE"
+          },
+          "transcript_url": {
+            "type": "string",
+            "description": "signed url of the recording transcript. This url is temporary and expires. Returned whenever the transcript file still exists, even when the recording itself is gone: anonymisation deletes the media and keeps the transcript, while the candidate's own deletion removes both"
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "description": "length (in seconds) of the recording, not a time the candidate spent",
+            "format": "int32",
+            "example": 187
+          }
+        },
+        "description": "a single recording of a VIDEO answer"
+      },
+      "report": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "type": "integer",
+            "description": "duration (in seconds) spent by the candidate to complete the test",
+            "format": "int64",
+            "example": 2009
+          },
+          "warnings": {
+            "type": "array",
+            "description": "warnings about the test",
+            "items": {
+              "type": "string",
+              "description": "warnings about the test"
+            }
+          },
+          "points": {
+            "type": "integer",
+            "description": "number of points awarded to the test",
+            "format": "int32",
+            "example": 40
+          },
+          "score": {
+            "type": "number",
+            "description": "number of points in percentage",
+            "format": "double",
+            "example": 6.06
+          },
+          "technologies": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/report_technology"
+            }
+          },
+          "total_duration": {
+            "type": "integer",
+            "description": "maximal duration (in seconds) available for the test",
+            "format": "int64",
+            "example": 2700
+          },
+          "total_points": {
+            "type": "integer",
+            "description": "available points for the test",
+            "format": "int32",
+            "example": 660
+          },
+          "comparative_score": {
+            "type": "number",
+            "description": "candidate score compared with developers who have taken a similar test",
+            "format": "double",
+            "example": 13.9
+          },
+          "community_stats": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "marked_as_cheated_by_recruiter": {
+            "type": "boolean",
+            "description": "whether a recruiter manually flagged this candidate as cheated. Never set by CoderPad: the platform own detections are reported as warnings instead. The question level flag is questions[].marked_as_cheated_by_recruiter",
+            "example": false
+          },
+          "time_spent_outside_environment_seconds": {
+            "type": "integer",
+            "description": "total time (in seconds) the candidate spent with the environment out of focus during the test",
+            "format": "int64",
+            "example": 214
+          },
+          "environment_exit_count": {
+            "type": "integer",
+            "description": "number of times the candidate left the environment during the test",
+            "format": "int32",
+            "example": 9
+          }
+        },
+        "description": "the test report"
+      },
+      "report_skill": {
+        "type": "object",
+        "properties": {
+          "points": {
+            "type": "integer",
+            "description": "number of points awarded to the test for the given technology and the specific skill",
+            "format": "int32",
+            "example": 20
+          },
+          "score": {
+            "type": "number",
+            "description": "number of points in percentage for the given technology and the specific skill",
+            "format": "double",
+            "example": 6.06
+          },
+          "total_points": {
+            "type": "integer",
+            "description": "available points for the test for the given technology and the specific skill",
+            "format": "int32",
+            "example": 330
+          }
+        },
+        "description": "report by skill for a given technology - the property name is the skill name, 'Language Knowledge' or 'Problem Solving' for instance"
+      },
+      "report_technology": {
+        "type": "object",
+        "properties": {
+          "points": {
+            "type": "integer",
+            "description": "number of points awarded to the test for the given technology",
+            "format": "int32",
+            "example": 20
+          },
+          "score": {
+            "type": "number",
+            "description": "number of points in percentage for the given technology",
+            "format": "double",
+            "example": 6.06
+          },
+          "skills": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/report_skill"
+            }
+          },
+          "total_points": {
+            "type": "integer",
+            "description": "available points for the test for the given technology",
+            "format": "int32",
+            "example": 330
+          },
+          "comparative_score": {
+            "type": "number",
+            "description": "candidate score compared with developers who have taken a similar test for the given technology",
+            "format": "double",
+            "example": 13.9
+          }
+        },
+        "description": "report by technology - the property name is the technology name, 'PHP' for instance"
+      },
+      "rubric": {
+        "type": "object",
+        "properties": {
+          "criteria": {
+            "type": "array",
+            "description": "criteria of the rubric, in the order the question defines them, each with the result of its review",
+            "items": {
+              "$ref": "#/components/schemas/rubric_criterion"
+            }
+          }
+        },
+        "description": "result of the review of the answer against the question rubric"
+      },
+      "rubric_criterion": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "the criterion label",
+            "example": "Explains the trade-off"
+          },
+          "description": {
+            "type": "string",
+            "description": "reviewer-facing description of what the criterion expects"
+          },
+          "skill": {
+            "type": "string",
+            "description": "skill assessed by this criterion",
+            "example": "Communication"
+          },
+          "outcome": {
+            "type": "string",
+            "description": "verdict of the criterion. PENDING_MANUAL_REVIEW while a human still has to grade it, which puts the whole question in PENDING_MANUAL_REVIEW too. NOT_RUN when nobody is expected to grade it, typically because the candidate never answered the question. An AI_GRADING criterion is graded by the AI, so it is decided without ever being PENDING_MANUAL_REVIEW",
+            "example": "PASSED",
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "NOT_RUN",
+              "PENDING_MANUAL_REVIEW"
+            ]
+          },
+          "max_points": {
+            "type": "integer",
+            "description": "points the criterion is worth, the points of the question API",
+            "format": "int32",
+            "example": 50
+          },
+          "awarded_points": {
+            "type": "integer",
+            "description": "points the reviewer awarded, null while the criterion has not been reviewed",
+            "format": "int32",
+            "example": 25
+          },
+          "result_message": {
+            "type": "string",
+            "description": "explains the result of this criterion. Free text meant to be displayed, not parsed. Only on a question whose criteria are validators the platform records a message for, such as a FILE_UPLOAD"
+          },
+          "result_overridden_by_recruiter": {
+            "type": "boolean",
+            "description": "whether a recruiter set this result by hand instead of leaving it to the grading. A CoderPad admin or a write-access shared report can do it too, never CoderPad itself. outcome and awarded_points already reflect it, so a caller never applies it itself",
+            "example": false
+          },
+          "review_mode": {
+            "type": "string",
+            "description": "how the criterion is reviewed, the review_mode of the question API",
+            "example": "HUMAN_ONLY",
+            "enum": [
+              "HUMAN_ONLY",
+              "AI_SUGGESTIONS",
+              "AI_GRADING"
+            ]
+          },
+          "ai_review": {
+            "$ref": "#/components/schemas/ai_review"
+          }
+        },
+        "description": "result of one criterion of the rubric the answer was reviewed against"
+      },
+      "sql_query_result_comparison": {
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "description": "verdict of the comparison. NOT_RUN when it was never run, typically because the candidate never submitted: an unrun comparison is undecided, never failed",
+            "example": "PASSED",
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "NOT_RUN",
+              "PENDING_MANUAL_REVIEW"
+            ]
+          },
+          "max_points": {
+            "type": "integer",
+            "description": "points the comparison is worth, which is the whole question",
+            "format": "int32",
+            "example": 40
+          },
+          "awarded_points": {
+            "type": "integer",
+            "description": "points the candidate obtained, null while the comparison has not been decided",
+            "format": "int32",
+            "example": 40
+          },
+          "result_message": {
+            "type": "string",
+            "description": "explains the result of the comparison. Free text meant to be displayed, not parsed"
+          },
+          "result_overridden_by_recruiter": {
+            "type": "boolean",
+            "description": "whether a recruiter set this result by hand instead of leaving it to the automatic grading. A CoderPad admin or a write-access shared report can do it too, never CoderPad itself. outcome and awarded_points already reflect it, so a caller never applies it itself",
+            "example": false
+          },
+          "timed_out": {
+            "type": "boolean",
+            "description": "whether the query timed out",
+            "example": false
+          }
+        },
+        "description": "result of comparing the candidate query result with the reference one"
+      },
+      "test_question": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "the question global id, stable across versions. Same id as GET /v1.1/questions/{id}",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "version": {
+            "type": "integer",
+            "description": "the version of the question the candidate answered",
+            "format": "int32",
+            "example": 4
+          },
+          "type": {
+            "type": "string",
+            "description": "the question type, with the same values as the question API publishes",
+            "example": "CODE",
+            "enum": [
+              "CODE",
+              "MCQ",
+              "TEXT",
+              "GAME",
+              "FILE_UPLOAD",
+              "PROJECT",
+              "VIDEO",
+              "MULTI"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "description": "the question title",
+            "example": "Merge overlapping intervals"
+          },
+          "domain": {
+            "type": "string",
+            "description": "the question domain name",
+            "example": "Algorithms"
+          },
+          "warnings": {
+            "type": "array",
+            "description": "warnings raised on this question. report.warnings holds the test session ones, so a warning is here or there, never in both",
+            "items": {
+              "$ref": "#/components/schemas/warning"
+            }
+          },
+          "evaluation": {
+            "$ref": "#/components/schemas/evaluation"
+          },
+          "answer": {
+            "$ref": "#/components/schemas/answer"
+          },
+          "max_points": {
+            "type": "integer",
+            "description": "points the question is worth",
+            "format": "int32",
+            "example": 80
+          },
+          "awarded_points": {
+            "type": "integer",
+            "description": "points the candidate obtained on this question. A question waiting for its review reports the points already awarded, 0 when none is. Omitted while the test is not finished, and on a campaign hiding the scores from the recruiters, where max_points is omitted too",
+            "format": "int32",
+            "example": 45
+          },
+          "time_limit_seconds": {
+            "type": "integer",
+            "description": "time limit (in seconds) of the question. Only returned when the test timer_type is PER_QUESTION, the only mode where a question has a limit of its own",
+            "format": "int32",
+            "example": 1200
+          },
+          "time_spent_seconds": {
+            "type": "integer",
+            "description": "time (in seconds) the candidate actually spent on this question, whatever the timer_type. Can exceed time_limit_seconds when the timer was tampered with",
+            "format": "int64",
+            "example": 1043
+          },
+          "first_access_time": {
+            "type": "integer",
+            "description": "timestamp (in milliseconds) of the first time the candidate opened the question",
+            "format": "int64",
+            "example": 1685545371216
+          },
+          "submission_time": {
+            "type": "integer",
+            "description": "timestamp (in milliseconds) at which the candidate submitted this question, the last submission when there are several. Absent when the candidate never submitted it. A save or a code test does not move it, last_activity_time does",
+            "format": "int64",
+            "example": 1685545371216
+          },
+          "last_activity_time": {
+            "type": "integer",
+            "description": "timestamp (in milliseconds) of the candidate's last activity on this question (last submit or code test)",
+            "format": "int64",
+            "example": 1685545371216
+          },
+          "answer_status": {
+            "type": "string",
+            "description": "what the candidate produced on this question, whatever its type. Resolved in that order: NOT_STARTED (no first_access_time), NOT_SUBMITTED (no submission_time), EMPTY (submitted nothing at all), STARTER_CODE_UNCHANGED (submitted the starter untouched, CODE, GAME and PROJECT only), ANSWERED otherwise. Returned while the test is still running as well, unlike the other candidate fields: it says where the candidate stands, not how they did, and it can still change until the test ends",
+            "example": "ANSWERED",
+            "enum": [
+              "NOT_STARTED",
+              "NOT_SUBMITTED",
+              "EMPTY",
+              "STARTER_CODE_UNCHANGED",
+              "ANSWERED"
+            ]
+          },
+          "grading_status": {
+            "type": "string",
+            "description": "how far the grading of the question went, so a caller knows whether awarded_points can still change. GRADED when every criterion that could be decided was, PENDING_MANUAL_REVIEW while a human still has to grade one of them, NOT_GRADED when none was ever decided, typically an unanswered question. It is not a verdict: awarded_points against max_points and the outcome of each criterion carry the result itself",
+            "example": "GRADED",
+            "enum": [
+              "GRADED",
+              "PENDING_MANUAL_REVIEW",
+              "NOT_GRADED"
+            ]
+          },
+          "timed_out": {
+            "type": "boolean",
+            "description": "whether the candidate ran out of time on this question",
+            "example": false
+          },
+          "result_overridden_by_recruiter": {
+            "type": "boolean",
+            "description": "whether a recruiter set the result of this question by hand instead of leaving it to the automatic grading. A CoderPad admin or a write-access shared report can do it too, never CoderPad itself. awarded_points already reflects it, so a caller never applies it itself. Each test case carries the same flag for its own result",
+            "example": false
+          },
+          "marked_as_cheated_by_recruiter": {
+            "type": "boolean",
+            "description": "whether a recruiter manually flagged this answer as cheated. Never set by CoderPad: the platform own detections are reported as warnings instead. The candidate level flag is report.marked_as_cheated_by_recruiter",
+            "example": false
+          },
+          "time_spent_outside_environment_seconds": {
+            "type": "integer",
+            "description": "total time (in seconds) the candidate spent with the environment out of focus during this question",
+            "format": "int64",
+            "example": 132
+          },
+          "environment_exit_count": {
+            "type": "integer",
+            "description": "number of times the candidate left the environment during this question",
+            "format": "int32",
+            "example": 5
+          },
+          "mcq_details": {
+            "$ref": "#/components/schemas/mcq_details"
+          }
+        },
+        "description": "detailed report data of a single question of the test"
+      },
+      "test_report": {
+        "type": "object",
+        "properties": {
+          "test_cases": {
+            "type": "array",
+            "description": "tests of the suite, in the order the question defines them, each with its result",
+            "items": {
+              "$ref": "#/components/schemas/test_report_test_case"
+            }
+          }
+        },
+        "description": "result of the project test suite run on the candidate answer"
+      },
+      "test_report_test_case": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "stable identifier of the test case, the key of the question API",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "label": {
+            "type": "string",
+            "description": "the test case label",
+            "example": "Returns the first page by default"
+          },
+          "skill": {
+            "type": "string",
+            "description": "skill assessed by this test case",
+            "example": "API design"
+          },
+          "outcome": {
+            "type": "string",
+            "description": "verdict of the test case. NOT_RUN when the suite never ran it, typically because the candidate never submitted: an unrun test case is undecided, never failed. PENDING_MANUAL_REVIEW never applies here, only a rubric criterion waits for a human",
+            "example": "PASSED",
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "NOT_RUN",
+              "PENDING_MANUAL_REVIEW"
+            ]
+          },
+          "output": {
+            "type": "string",
+            "description": "raw output produced by the test run"
+          },
+          "test_identifier": {
+            "type": "string",
+            "description": "identifier of the test in the project test suite",
+            "example": "orders/pagination.test.ts#returns first page by default"
+          },
+          "max_points": {
+            "type": "integer",
+            "description": "points the test case is worth, the points of the question API",
+            "format": "int32",
+            "example": 50
+          },
+          "awarded_points": {
+            "type": "integer",
+            "description": "points the candidate obtained on this test case, null while it has not been decided",
+            "format": "int32",
+            "example": 50
+          },
+          "result_overridden_by_recruiter": {
+            "type": "boolean",
+            "description": "whether a recruiter set this result by hand instead of leaving it to the test suite. A CoderPad admin or a write-access shared report can do it too, never CoderPad itself. outcome and awarded_points already reflect it, so a caller never applies it itself",
+            "example": false
+          }
+        },
+        "description": "result of one test of the project test suite"
+      },
+      "text_answer": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "the free text answer written by the candidate"
+          }
+        },
+        "description": "what the candidate wrote on a TEXT question"
+      },
+      "text_answer_matching": {
+        "type": "object",
+        "properties": {
+          "accepted_answers": {
+            "type": "array",
+            "description": "the answers the question accepts, the candidate answer being matched against each of them. They carry no verdict of their own: the platform stops at the first match, so only the question level grading_status and awarded_points say whether the answer was accepted",
+            "items": {
+              "$ref": "#/components/schemas/accepted_answer"
+            }
+          }
+        },
+        "description": "how the candidate text was matched against the answers the question accepts"
+      },
+      "validation_code": {
+        "type": "object",
+        "properties": {
+          "test_cases": {
+            "type": "array",
+            "description": "test cases of the question, each with its result. A question nesting its validators returns the whole tree flattened, a parent before its own children, so the max_points of the list add up to the question max_points",
+            "items": {
+              "$ref": "#/components/schemas/validation_code_test_case"
+            }
+          }
+        },
+        "description": "result of the validation methods run against the candidate code"
+      },
+      "validation_code_test_case": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "the test case label",
+            "example": "Evicts the least recently used entry"
+          },
+          "skill": {
+            "type": "string",
+            "description": "skill assessed by this test case",
+            "example": "Collections"
+          },
+          "outcome": {
+            "type": "string",
+            "description": "verdict of the test case. NOT_RUN when it was never run, typically because the candidate never submitted or a previous test case timed out: an unrun test case is undecided, never failed. PENDING_MANUAL_REVIEW never applies here, only a rubric criterion waits for a human",
+            "example": "PASSED",
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "NOT_RUN",
+              "PENDING_MANUAL_REVIEW"
+            ]
+          },
+          "test_identifier": {
+            "type": "string",
+            "description": "name of the validation method running the test case",
+            "example": "testEvictsLeastRecentlyUsed"
+          },
+          "max_points": {
+            "type": "integer",
+            "description": "points the test case is worth, the points of the question API",
+            "format": "int32",
+            "example": 20
+          },
+          "awarded_points": {
+            "type": "integer",
+            "description": "points the candidate obtained on this test case, null while it has not been decided",
+            "format": "int32",
+            "example": 10
+          },
+          "result_message": {
+            "type": "string",
+            "description": "explains the result of this test case: the test runner output, or the reason it was not run. Free text meant to be displayed, not parsed"
+          },
+          "result_overridden_by_recruiter": {
+            "type": "boolean",
+            "description": "whether a recruiter set this result by hand instead of leaving it to the automatic grading. A CoderPad admin or a write-access shared report can do it too, never CoderPad itself. outcome and awarded_points already reflect it, so a caller never applies it itself",
+            "example": false
+          },
+          "timed_out": {
+            "type": "boolean",
+            "description": "whether the test case timed out",
+            "example": false
+          }
+        },
+        "description": "result of one validation method run against the candidate code"
+      },
+      "video_answer": {
+        "type": "object",
+        "properties": {
+          "recordings": {
+            "type": "array",
+            "description": "the recordings of the answer, oldest first. Omitted when recording_availability is UNAVAILABLE",
+            "items": {
+              "$ref": "#/components/schemas/recording"
+            }
+          },
+          "recording_availability": {
+            "type": "string",
+            "description": "whether the recordings can still be played back. Every deletion path acts on all the recordings of the question at once, so the state belongs to the answer, not to one recording. url is only returned when it is AVAILABLE, transcript_url survives DELETED_BY_RECRUITER. UNAVAILABLE only ever shows up next to a candidate_comment: with nothing else to say the whole answer is omitted instead",
+            "example": "AVAILABLE",
+            "enum": [
+              "AVAILABLE",
+              "DELETED_BY_CANDIDATE",
+              "DELETED_BY_RECRUITER",
+              "UNAVAILABLE"
+            ]
+          },
+          "candidate_comment": {
+            "type": "string",
+            "description": "comment left by the candidate, typically when deleting a recording"
+          }
+        },
+        "description": "what the candidate recorded on a VIDEO question"
+      },
+      "warning": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "stable warning identifier, the same values as the CSV export. Not a closed set: a custom warning carries the company defined type instead",
+            "example": "TIME_SPENT_OUTSIDE_IDE_TOO_LONG"
+          },
+          "level": {
+            "type": "string",
+            "description": "how the recruiter interface classifies the warning",
+            "example": "WARNING",
+            "enum": [
+              "WARNING",
+              "UNUSUAL_ACTIVITY"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "short English description of the warning. A custom warning carries the label the company configured instead, the simplified one on GET /v1.1/tests and the detailed one on GET /v1.1/tests/{id}",
+            "example": "Candidate has spent a significant time outside the environment"
+          }
+        },
+        "description": "a warning or an unusual activity detected on the test session or on a question"
+      },
+      "questions": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "question id",
+            "format": "int32",
+            "example": 123456
+          },
+          "last_activity_time": {
+            "type": "integer",
+            "description": "time (in milliseconds) of the candidate's last activity (last submit or code test)",
+            "format": "int64",
+            "example": 1685545371216
+          }
+        },
+        "description": "list of all the questions with their id and last_activity_time"
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "the test status",
+            "example": "completed",
+            "enum": [
+              "aborted",
+              "canceled",
+              "completed",
+              "expired",
+              "in progress",
+              "waiting",
+              "need review"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "url to the test report through the dashboard application",
+            "example": "https://www.codingame.com/work/dashboard/campaign/69/candidates/?selected=42"
+          },
+          "report": {
+            "$ref": "#/components/schemas/report"
+          },
+          "id": {
+            "type": "integer",
+            "description": "the test id",
+            "format": "int32",
+            "example": 42
+          },
+          "id_test": {
+            "type": "integer",
+            "description": "the test id (deprecated, see id)",
+            "format": "int32",
+            "example": 42
+          },
+          "organization_id": {
+            "type": "string",
+            "description": "the organization id",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          },
+          "campaign_id": {
+            "type": "integer",
+            "description": "the campaign id",
+            "format": "int32",
+            "example": 42
+          },
+          "candidate_name": {
+            "type": "string",
+            "description": "the name of the candidate",
+            "example": "Jean Dupont"
+          },
+          "candidate_email": {
+            "type": "string",
+            "description": "the email of the candidate",
+            "example": "jean.dupont@codingame.com"
+          },
+          "tags": {
+            "type": "array",
+            "description": "the tags of the candidate",
+            "items": {
+              "type": "string",
+              "description": "the tags of the candidate"
+            }
+          },
+          "send_time": {
+            "type": "integer",
+            "description": "timestamp (in milliseconds) when the test has been sent",
+            "format": "int64"
+          },
+          "start_time": {
+            "type": "integer",
+            "description": "timestamp (in milliseconds) when the test has been started",
+            "format": "int64"
+          },
+          "end_time": {
+            "type": "integer",
+            "description": "timestamp (in milliseconds) when the test has been ended",
+            "format": "int64"
+          },
+          "test_url": {
+            "type": "string",
+            "description": "the url to the test"
+          },
+          "candidate_language": {
+            "type": "string",
+            "description": "the language chosen by the candidate to take the test if they started the test, null otherwise"
+          },
+          "last_activity_time": {
+            "type": "integer",
+            "description": "time (in milliseconds) of the candidate's last activity (last submit or code test)",
+            "format": "int64",
+            "example": 1685545371216
+          },
+          "approval_status": {
+            "type": "string",
+            "description": "approval status of the candidate (PASSED, REJECTED, TO_REVIEW)",
+            "example": "PASSED"
+          },
+          "questions": {
+            "type": "array",
+            "description": "questions and their last activity time",
+            "items": {
+              "$ref": "#/components/schemas/questions"
+            }
+          }
+        },
+        "description": "the data relevant to the event"
+      },
+      "result_page": {
+        "type": "object",
+        "properties": {
+          "tests": {
+            "type": "array",
+            "description": "the test reports of the current page",
+            "items": {
+              "$ref": "#/components/schemas/result"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/pagination_config"
+          }
+        }
+      },
+      "webhook": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "the endpoint of your webhook",
+            "example": "https://www.example.com/hook"
+          }
+        }
+      },
+      "WebhookTestStatusChangedDto": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "description": "the type of event that triggered the webhook",
+            "enum": [
+              "test_status_changed",
+              "test_review_status_changed"
+            ]
+          },
+          "data": {
+            "$ref": "#/components/schemas/result"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "name": "API-Key",
+        "in": "header"
+      }
+    }
+  }
+}
