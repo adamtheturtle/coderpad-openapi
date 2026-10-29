@@ -19,9 +19,9 @@ running tests.
 Keep client-specific behavior and test assertions in the consuming
 repositories.
 
-The SDK and CLI still contain their existing copies.
-Migrating those consumers to this repository is a separate follow-up.
-Creating this repository does not change any installed package.
+The Python SDK and CLI consume immutable commits through their ``spec`` Git
+submodules.
+Each consumer updates its pin independently.
 
 Request contracts
 -----------------
@@ -35,7 +35,8 @@ JSON requests wrap attributes in ``pad`` or ``question``.
 Pad lists support opaque cursor continuations alongside numeric pages.
 Question lists support text search, pad-type filters, and title/usage sorting.
 Organization question lists support language and pad-type filtering.
-``GET /api/user`` describes the API key owner's name and pad-creation capability.
+``GET /api/user`` describes the API key owner's name, anonymous identifier,
+and pad-creation capability.
 
 
 Response contracts
@@ -68,6 +69,7 @@ operations, detailed evaluations, AI Assist conversations, and account details.
 Temporary uploads use raw gzip bytes with a 52428800-byte limit.
 Report exports return PDF bytes.
 Candidate projects return tar.gz bytes.
+An empty ``enabled_coding_agents`` string disables coding agents.
 
 Pin both documents to an immutable release tag or full commit SHA.
 The Interview filename and base URL conventions remain stable.
