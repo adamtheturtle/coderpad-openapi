@@ -63,7 +63,7 @@ Campaign and test IDs are integers; question bank and detailed test-question
 IDs are UUIDs.
 The lightweight test list retains its integer question IDs.
 
-The contract covers campaign creation and manual invitations, question-bank
+The contract covers campaign creation, definition reads and manual invitations, question-bank
 operations, detailed evaluations, AI Assist conversations, and account details.
 Temporary uploads use raw gzip bytes with a 52428800-byte limit.
 Report exports return PDF bytes.

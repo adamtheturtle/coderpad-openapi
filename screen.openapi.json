@@ -1495,6 +1495,50 @@
           }
         }
       }
+    },
+    "/v1.1/campaigns/{campaign_id}": {
+      "get": {
+        "tags": [
+          "Campaigns"
+        ],
+        "summary": "Get test campaign details",
+        "description": "Returns the test as the creation endpoint takes it, so a caller can read a test, change one field and send it back.",
+        "operationId": "campaign",
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "description": "id of the test campaign to be fetched",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the test campaign details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "test campaign not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkApiExceptionSerialized"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4664,6 +4708,39 @@
             "$ref": "#/components/schemas/result"
           }
         }
+      },
+      "CampaignDetails": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "the test id, the one the other /v1.1 endpoints take",
+            "format": "int32",
+            "example": 121
+          },
+          "name": {
+            "type": "string",
+            "description": "the test name",
+            "example": "Backend Engineer"
+          },
+          "questions": {
+            "type": "array",
+            "description": "the test entries, in the order candidates take them",
+            "items": {
+              "$ref": "#/components/schemas/campaign_question"
+            }
+          },
+          "settings": {
+            "$ref": "#/components/schemas/campaign_settings"
+          },
+          "team_id": {
+            "type": "string",
+            "description": "the team the test belongs to",
+            "format": "uuid",
+            "example": "0558b3e3-b76c-42ea-9435-8da1adb7e232"
+          }
+        },
+        "description": "a test campaign"
       }
     },
     "securitySchemes": {
