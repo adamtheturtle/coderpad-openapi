@@ -1758,8 +1758,9 @@
           "enabled_coding_agents": {
             "type": "string",
             "description": "the coding agents candidates may run, none when empty",
-            "example": "[\"CLAUDE_CODE\"]",
+            "example": "CODEX",
             "enum": [
+              "",
               "CLAUDE_CODE",
               "CODEX"
             ]
