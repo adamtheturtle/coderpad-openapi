@@ -45,8 +45,7 @@ Response contracts
 Individual pad responses can include analytics.
 The optional fields are ``interview_highlights``, ``interview_outline``,
 ``transcript``, ``transcript_source_unavailable``, and ``review_reports``.
-These fields are optional and depend on permissions and account features.
-List responses do not require analytics.
+These fields are optional and depend on permissions and account features, while list responses do not require analytics.
 
 Question starter files describe project overlays separately from uploaded
 attachments.
@@ -88,8 +87,8 @@ It also checks documentation with Vale:
 
 .. code-block:: shell
 
-   uvx --with docutils --from vale==3.22.0.0 vale sync
-   uvx --with docutils --from vale==3.22.0.0 vale .
+   uvx --with docutils --from vale==3.26.0.1 vale sync
+   uvx --with docutils --from vale==3.26.0.1 vale .
 
 Provenance
 ----------
