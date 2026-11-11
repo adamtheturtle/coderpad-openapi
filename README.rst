@@ -27,7 +27,10 @@ Request contracts
 -----------------
 
 The Interview contract covers form, multipart, and JSON question writes,
-pad access controls, and take-home creation settings.
+pad access controls, take-home creation settings, and project-template pads.
+Project pads accept starter-file overlays or a multipart ZIP archive.
+Their response language and contents can be null; retrieve files through the
+pad environment IDs.
 Instruction steps carry names, and project starter-file overlays preserve
 their wire representations.
 JSON requests wrap attributes in ``pad`` or ``question``.

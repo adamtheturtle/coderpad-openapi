@@ -617,6 +617,34 @@
                   "take_home": true,
                   "take_home_time_limit": 60
                 }
+              },
+              "examples": {
+                "singleFile": {
+                  "summary": "Single-file pad",
+                  "value": {
+                    "pad": {
+                      "title": "Backend interview",
+                      "language": "python3",
+                      "contents": "def solution():\n    pass\n",
+                      "private": true
+                    }
+                  }
+                },
+                "projectTemplate": {
+                  "summary": "Project template pad with its own files",
+                  "value": {
+                    "pad": {
+                      "title": "Backend interview",
+                      "language": "multifile_python",
+                      "file_contents": "[{\"path\": \"main.py\", \"contents\": \"def solution():\\n    pass\\n\"}, {\"path\": \"tests/test_solution.py\", \"contents\": \"def test_solution():\\n    assert True\\n\", \"hidden\": true}]"
+                    }
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PadMultipartRequest"
               }
             }
           }
@@ -831,7 +859,7 @@
             "BearerAuth": []
           }
         ],
-        "description": "Creates a pad owned by you, or by another user of your organization with `user_email`. Creating a pad counts towards your pad quota.\n\nFields you omit use your account defaults (privacy, code execution, language) and your organization's AI Assist setting.\n\nA pad can start either with `contents` or with a question from your question bank (`question_id`), not both.\n"
+        "description": "Creates a pad owned by you, or by another user of your organization with `user_email`. Creating a pad counts towards your pad quota.\n\nFields you omit use your account defaults (privacy, code execution, language) and your organization's AI Assist setting.\n\nA pad starts with one of:\n\n- A question from your question bank (`question_id`).\n- A single-file language: set `language` to the language key and optionally send the starter code in `contents`.\n- A project template (for example `multifile_python` or `react`): set `language` to the template slug. The pad opens on the template's files, or on your own files sent either:\n  - in `file_contents`: the files replace the template files with the same path or are added, and the other template files are kept. `\"deleted\": true` removes a template file.\n  - as a zip archive in `zip_file` (multipart request): the archive replaces all the template files, except the template's `.cpad` configuration file, which is kept unless the archive has one. A single enclosing folder is removed from the paths.\n\nThese cannot be combined: `question_id` excludes `contents`, `file_contents` and `zip_file`; a project template excludes `contents`; a single-file language excludes `file_contents` and `zip_file`.\n\nA project template pad has a `null` `language` and `contents` in responses; its files are available through `pad_environment_ids` and `GET /pad_environments/{id}`.\n"
       }
     },
     "/api/pads/{id}": {
@@ -5040,7 +5068,8 @@
             "type": "string"
           },
           "language": {
-            "type": "string"
+            "type": "string",
+            "description": "A single-file language key or a project template slug."
           },
           "contents": {
             "type": "string"
@@ -5121,12 +5150,33 @@
               "true",
               "false"
             ]
+          },
+          "file_contents": {
+            "type": "string",
+            "description": "The pad's starter files, for project templates, as a JSON-encoded array of objects with `path`, `contents`, and optionally `hidden: true` to hide a file from the candidate. Files replace the template files with the same path or are added; `deleted: true` drops a template file (`.cpad` cannot be deleted). Cannot be combined with `contents` or `question_id`.\n",
+            "example": "[{\"path\": \"src/App.jsx\", \"contents\": \"export default function App() {}\"}]"
           }
         },
         "not": {
-          "required": [
-            "contents",
-            "question_id"
+          "anyOf": [
+            {
+              "required": [
+                "contents",
+                "question_id"
+              ]
+            },
+            {
+              "required": [
+                "contents",
+                "file_contents"
+              ]
+            },
+            {
+              "required": [
+                "question_id",
+                "file_contents"
+              ]
+            }
           ]
         }
       },
@@ -5421,7 +5471,7 @@
           },
           "language": {
             "type": "string",
-            "description": "A single-file language key.",
+            "description": "A single-file language key or a project template slug.",
             "example": "python3"
           },
           "contents": {
@@ -5463,7 +5513,7 @@
           },
           "question_id": {
             "type": "integer",
-            "description": "A question from your question bank to start the pad with. Cannot be combined with `contents`."
+            "description": "A question from your question bank to start the pad with. Cannot be combined with `contents`, `file_contents` or `zip_file`."
           },
           "notes": {
             "type": "string",
@@ -5485,13 +5535,34 @@
           "ai_assist_enabled": {
             "type": "boolean",
             "description": "Enable AI Assist in the pad. Defaults to your organization's setting."
+          },
+          "file_contents": {
+            "type": "string",
+            "description": "The pad's starter files, for project templates, as a JSON-encoded array of objects with `path`, `contents`, and optionally `hidden: true` to hide a file from the candidate. Files replace the template files with the same path or are added; `deleted: true` drops a template file (`.cpad` cannot be deleted). Cannot be combined with `contents` or `question_id`.\n",
+            "example": "[{\"path\": \"src/App.jsx\", \"contents\": \"export default function App() {}\"}]"
           }
         },
         "additionalProperties": false,
         "not": {
-          "required": [
-            "contents",
-            "question_id"
+          "anyOf": [
+            {
+              "required": [
+                "contents",
+                "question_id"
+              ]
+            },
+            {
+              "required": [
+                "contents",
+                "file_contents"
+              ]
+            },
+            {
+              "required": [
+                "question_id",
+                "file_contents"
+              ]
+            }
           ]
         }
       },
@@ -6334,6 +6405,36 @@
             }
           }
         ]
+      },
+      "PadMultipartRequest": {
+        "type": "object",
+        "description": "Creates a project template pad from a zip archive. The other fields of `PadCreateRequest` can be sent the same way, as `pad[field]`.",
+        "required": [
+          "pad[language]",
+          "pad[zip_file]"
+        ],
+        "properties": {
+          "pad[title]": {
+            "type": "string"
+          },
+          "pad[language]": {
+            "type": "string",
+            "description": "A project template slug.",
+            "example": "multifile_python"
+          },
+          "pad[zip_file]": {
+            "type": "string",
+            "format": "binary",
+            "description": "A zip archive of the pad's files. It replaces the template files, except `.cpad` which is kept unless the archive has one. A single enclosing folder is removed from the paths. Cannot be combined with `contents` or `question_id`."
+          },
+          "pad[private]": {
+            "type": "boolean"
+          },
+          "pad[user_email]": {
+            "type": "string",
+            "format": "email"
+          }
+        }
       }
     },
     "securitySchemes": {
