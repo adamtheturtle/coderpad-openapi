@@ -23,6 +23,15 @@ The Python SDK and CLI consume immutable commits through their ``spec`` Git
 submodules.
 Each consumer updates its pin independently.
 
+Environment catalogue
+---------------------
+
+``GET /api/languages`` lists available environments.
+``GET /api/languages/{language}`` supplies starter code and environment context,
+including project templates such as ``multifile_python``.
+The response schema preserves arbitrary catalogue JSON rather than imposing an
+unverified field layout.
+
 Request contracts
 -----------------
 
