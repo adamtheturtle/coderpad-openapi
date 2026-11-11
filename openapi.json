@@ -4856,6 +4856,61 @@
           }
         ]
       }
+    },
+    "/api/languages": {
+      "get": {
+        "tags": [
+          "Languages"
+        ],
+        "summary": "List available language and project environments",
+        "description": "Returns the complete environment catalogue JSON. The metadata fields are extensible.",
+        "responses": {
+          "200": {
+            "description": "Environment catalogue or detail metadata.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key."
+          }
+        }
+      }
+    },
+    "/api/languages/{language}": {
+      "get": {
+        "tags": [
+          "Languages"
+        ],
+        "summary": "Retrieve starter code and environment context",
+        "description": "Returns the complete environment catalogue JSON. The metadata fields are extensible.",
+        "responses": {
+          "200": {
+            "description": "Environment catalogue or detail metadata.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API key."
+          }
+        },
+        "parameters": [
+          {
+            "name": "language",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Language key or project-template slug, for example multifile_python."
+          }
+        ]
+      }
     }
   },
   "components": {
