@@ -1,0 +1,8 @@
+[dependency-groups]
+docs-lint = [
+  "doc8==2.0.0",
+  "doc8-inline-markup==2026.11.18.3",
+]
+
+[tool.doc8]
+ignore = ["D001"]
