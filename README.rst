@@ -40,13 +40,13 @@ pad access controls, take-home creation settings, and project-template pads.
 Project pads accept starter-file overlays or a multipart ZIP archive.
 Their response language and contents can be null; retrieve files through the
 pad environment IDs.
-Instruction steps carry names, and project starter-file overlays preserve
+Instruction steps have names, and project starter-file overlays preserve
 their wire representations.
 JSON requests wrap attributes in ``pad`` or ``question``.
 
 Pad lists support opaque cursor continuations alongside numeric pages.
 Question lists support text search, pad-type filters, and title/usage sorting.
-Organization question lists support language and pad-type filtering.
+Filter an organization's questions by language and pad type.
 ``GET /api/user`` describes the API key owner's name, anonymous identifier,
 and pad-creation capability.
 
